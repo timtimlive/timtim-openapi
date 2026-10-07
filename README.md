@@ -70,6 +70,24 @@ npm run check:contract      # is openapi.yaml the one TimTim.Live publishes?
 
 Report security problems privately: **Report a vulnerability** on this repository's [Security tab](https://github.com/timtimlive/timtim-openapi/security). Policy: https://timtim.live/partners/security. See [SECURITY.md](SECURITY.md).
 
+## TimTim.Live Developer Tools
+
+Open-source tools for connecting websites, apps and platforms to TimTim.Live.
+
+### What is open source
+
+SDKs, widgets, adapters, examples and public API specifications.
+
+### What is not included
+
+The hosted TimTim.Live Event API implementation, production databases, ticketing backend, checkout systems, attribution systems, payouts, fraud systems, customer data, infrastructure and proprietary business logic are not part of this repository.
+
+These tools connect to the hosted TimTim.Live API at:
+
+https://api.timtim.live
+
+Open-source licenses for client software do not grant ownership of TimTim.Live event data, API services, commercial rights, certification marks or trademarks.
+
 ## License
 
 This description file and everything here: [MIT](LICENSE) © 2026 timtim-live. Using the API itself is governed by the Partner Terms: https://timtim.live/partners/terms
