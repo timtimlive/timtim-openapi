@@ -1,0 +1,20 @@
+{
+  "id": "whd_example_3",
+  "type": "earnings.changed",
+  "created_at": "2026-10-05T09:00:01.000Z",
+  "mode": "live",
+  "data": {
+    "earning": {
+      "sale_id": "sale_example_1",
+      "event_id": "evt_example_live_1",
+      "transaction_value": 90,
+      "commission": -10,
+      "currency": "USD",
+      "status": "reversed",
+      "reason": "refund",
+      "created_at": "2026-10-05T09:00:00.000Z",
+      "test": false,
+      "sub_id": "click-42"
+    }
+  }
+}

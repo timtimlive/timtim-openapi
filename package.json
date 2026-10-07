@@ -1,0 +1,32 @@
+{
+  "name": "timtim-openapi",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "description": "The TimTim.Live Partner API contract (OpenAPI 3.1), JSON Schemas, examples and a Postman collection. Developer Preview.",
+  "license": "MIT",
+  "homepage": "https://timtim.live/developers/docs",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/timtimlive/timtim-openapi.git"
+  },
+  "engines": {
+    "node": ">=20.19"
+  },
+  "scripts": {
+    "lint": "redocly lint openapi.yaml --format=stylish",
+    "generate": "node scripts/generate.mjs",
+    "check:generated": "node scripts/generate.mjs --check",
+    "validate:examples": "node scripts/validate-examples.mjs",
+    "capture:examples": "node scripts/capture-examples.mjs",
+    "check:contract": "node scripts/check-contract.mjs",
+    "test": "npm run lint && npm run check:generated && npm run validate:examples"
+  },
+  "devDependencies": {
+    "@redocly/cli": "^2.60.0",
+    "ajv": "^8.20.0",
+    "ajv-formats": "^3.0.1",
+    "openapi-to-postmanv2": "^6.4.0",
+    "yaml": "^2.9.1"
+  }
+}

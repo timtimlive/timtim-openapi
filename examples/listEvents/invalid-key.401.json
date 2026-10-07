@@ -1,0 +1,8 @@
+{
+  "type": "https://timtim.live/partners/docs#problem-invalid-key",
+  "title": "We do not recognise that key.",
+  "status": 401,
+  "detail": "Check you copied the whole key, or make a new one at /partners/dashboard.",
+  "request_id": "req_VmVLGQShBxQ",
+  "code": "invalid_key"
+}

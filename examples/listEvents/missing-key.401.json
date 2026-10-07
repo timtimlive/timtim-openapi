@@ -1,0 +1,8 @@
+{
+  "type": "https://timtim.live/partners/docs#problem-missing-key",
+  "title": "Please add your TimTim.Live key.",
+  "status": 401,
+  "detail": "Send it as: Authorization: Bearer tt_test_… — get a test key at /partners/dashboard.",
+  "request_id": "req_Yr68U1kcl6k",
+  "code": "missing_key"
+}

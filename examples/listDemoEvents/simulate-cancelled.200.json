@@ -1,0 +1,107 @@
+{
+  "object": "list",
+  "mode": "test",
+  "events": [
+    {
+      "id": "evt_test_miami_konpa",
+      "name": "TEST EVENT — NO REAL MONEY · Miami Konpa Live",
+      "status": "cancelled",
+      "starts_at": null,
+      "ends_at": null,
+      "date": "2026-10-14",
+      "timezone": null,
+      "location": {
+        "venue": "Sample Waterfront Stage",
+        "address": null,
+        "city": "Miami",
+        "country": "US",
+        "lat": 25.7743,
+        "lng": -80.1937
+      },
+      "image": null,
+      "category": "music",
+      "performers": [
+        {
+          "name": "Sample Konpa Band"
+        }
+      ],
+      "tickets": {
+        "from": 30,
+        "to": 60,
+        "currency": "USD",
+        "availability": "ended",
+        "buy_url": "https://timtim.live/partners/demo#buy-evt_test_miami_konpa"
+      },
+      "earn": {
+        "eligible": false
+      },
+      "can_share": true,
+      "url": "https://timtim.live/partners/docs#sandbox",
+      "display": {
+        "short_description": "A sample concert for developers trying TimTim.Live for the first time.",
+        "date_label": "Wed, Oct 14 · 8:00 PM",
+        "price_label": "From $30"
+      },
+      "organizer": {
+        "name": "TimTim.Live Sandbox",
+        "verified": false
+      },
+      "test": true,
+      "updated_at": "2026-10-07T00:00:00.000Z",
+      "inventory_updated_at": "2026-10-07T00:00:00.000Z"
+    },
+    {
+      "id": "evt_test_miami_beach",
+      "name": "TEST EVENT — NO REAL MONEY · Miami Beach Sunset Party",
+      "status": "cancelled",
+      "starts_at": null,
+      "ends_at": null,
+      "date": "2026-10-16",
+      "timezone": null,
+      "location": {
+        "venue": "Sample Beach Club",
+        "address": null,
+        "city": "Miami",
+        "country": "US",
+        "lat": 25.7907,
+        "lng": -80.13
+      },
+      "image": null,
+      "category": "nightlife",
+      "performers": [
+        {
+          "name": "Sample DJ"
+        }
+      ],
+      "tickets": {
+        "from": 35,
+        "to": 50,
+        "currency": "USD",
+        "availability": "ended",
+        "buy_url": "https://timtim.live/partners/demo#buy-evt_test_miami_beach"
+      },
+      "earn": {
+        "eligible": false
+      },
+      "can_share": true,
+      "url": "https://timtim.live/partners/docs#sandbox",
+      "display": {
+        "short_description": "A sample party for local discovery partners.",
+        "date_label": "Fri, Oct 16 · 5:00 PM",
+        "price_label": "From $35"
+      },
+      "organizer": {
+        "name": "TimTim.Live Sandbox",
+        "verified": false
+      },
+      "test": true,
+      "updated_at": "2026-10-07T00:00:00.000Z",
+      "inventory_updated_at": "2026-10-07T00:00:00.000Z"
+    }
+  ],
+  "next": null,
+  "notices": [
+    "DEMO — SAMPLE DATA. These are sample events. No real money moves.",
+    "SIMULATED: every sample event is shown as if it were cancelled. Sandbox only."
+  ]
+}

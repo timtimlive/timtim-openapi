@@ -1,0 +1,1741 @@
+{
+  "info": {
+    "name": "TimTim.Live Partner API (Developer Preview)",
+    "description": "Generated from openapi.yaml (https://timtim.live/partner-api/openapi.yaml) with openapi-to-postmanv2, then arranged by scripts/generate.mjs.\n\n1. Send **Start here** — it needs no key.\n2. Put your test key (tt_test_…, from https://timtim.live/partners/dashboard) in the collection variable `apiKey`.\n3. Work down the folders.\n\nTest keys see sample events only. No real money moves. Docs: https://timtim.live/developers/docs",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{apiKey}}",
+        "type": "string"
+      }
+    ]
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "https://api.timtim.live/v1"
+    },
+    {
+      "key": "apiKey",
+      "value": "tt_test_YOUR_KEY"
+    },
+    {
+      "key": "eventId",
+      "value": "evt_test_washington_konpa"
+    },
+    {
+      "key": "ticketTypeId",
+      "value": "tt_test_washington_konpa"
+    },
+    {
+      "key": "changedSince",
+      "value": "2026-10-06T00:00:00Z"
+    },
+    {
+      "key": "nextCursor",
+      "value": ""
+    },
+    {
+      "key": "orderId",
+      "value": ""
+    },
+    {
+      "key": "clientId",
+      "value": ""
+    },
+    {
+      "key": "clientSecret",
+      "value": ""
+    },
+    {
+      "key": "accessToken",
+      "value": ""
+    },
+    {
+      "key": "webhookUrl",
+      "value": "https://your-server.example.com/timtim-webhook"
+    },
+    {
+      "key": "webhookSecret",
+      "value": "your-endpoint-signing-secret"
+    },
+    {
+      "key": "bulkFile",
+      "value": "bfs_YOURFEED.ndjson.gz"
+    }
+  ],
+  "item": [
+    {
+      "name": "Start here: sample events (no key)",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/demo/events?city=Miami&category=music",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "demo",
+            "events"
+          ],
+          "query": [
+            {
+              "key": "city",
+              "value": "Miami"
+            },
+            {
+              "key": "category",
+              "value": "music"
+            },
+            {
+              "key": "country",
+              "value": "US",
+              "disabled": true
+            },
+            {
+              "key": "from",
+              "value": "2026-10-01",
+              "disabled": true
+            },
+            {
+              "key": "to",
+              "value": "2026-12-31",
+              "disabled": true
+            },
+            {
+              "key": "near",
+              "value": "Paris,FR",
+              "disabled": true
+            },
+            {
+              "key": "artist",
+              "value": "Sample",
+              "disabled": true
+            },
+            {
+              "key": "limit",
+              "value": "20",
+              "disabled": true
+            },
+            {
+              "key": "cursor",
+              "value": "{{nextCursor}}",
+              "disabled": true
+            }
+          ]
+        },
+        "description": "No key, no sign-up. Every name starts with \"TEST EVENT — NO REAL MONEY\".\n\nThe same answer as `GET /events` for a test key — sample events only,\nevery name starting \"TEST EVENT — NO REAL MONEY\" — with no key and no\nsign-up. Readable from any website (CORS `*`). This is what\nhttps://timtim.live/developers/demo and the widget with no `data-key` call.\n\n`simulate` (sandbox only) shows how your code should behave on a bad day:\n`sold_out`, `cancelled`, `rescheduled` and `postponed` change every sample\nevent; `invalid_key` and `rate_limited` answer with the exact problem a real\nkey would get (401, and 429 with `Retry-After`).\n",
+        "auth": {
+          "type": "noauth"
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"200 OK\", () => pm.response.to.have.status(200));",
+              "const body = pm.response.json();",
+              "pm.test(\"a list of events\", () => pm.expect(body.object).to.eql(\"list\"));",
+              "if (body.next) pm.collectionVariables.set(\"nextCursor\", body.next);",
+              "pm.test(\"sample events only\", () => body.events.forEach((e) => pm.expect(e.name.startsWith(\"TEST EVENT — NO REAL MONEY\")).to.be.true));"
+            ]
+          }
+        }
+      ],
+      "response": [
+        {
+          "name": "Miami + music (captured)",
+          "originalRequest": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/demo/events?city=Miami&category=music",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "demo",
+                "events"
+              ]
+            }
+          },
+          "status": "OK",
+          "code": 200,
+          "_postman_previewlanguage": "json",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": "{\n  \"object\": \"list\",\n  \"mode\": \"test\",\n  \"events\": [\n    {\n      \"id\": \"evt_test_miami_konpa\",\n      \"name\": \"TEST EVENT — NO REAL MONEY · Miami Konpa Live\",\n      \"status\": \"scheduled\",\n      \"starts_at\": null,\n      \"ends_at\": null,\n      \"date\": \"2026-10-14\",\n      \"timezone\": null,\n      \"location\": {\n        \"venue\": \"Sample Waterfront Stage\",\n        \"address\": null,\n        \"city\": \"Miami\",\n        \"country\": \"US\",\n        \"lat\": 25.7743,\n        \"lng\": -80.1937\n      },\n      \"image\": null,\n      \"category\": \"music\",\n      \"performers\": [\n        {\n          \"name\": \"Sample Konpa Band\"\n        }\n      ],\n      \"tickets\": {\n        \"from\": 30,\n        \"to\": 60,\n        \"currency\": \"USD\",\n        \"availability\": \"available\",\n        \"buy_url\": \"https://timtim.live/partners/demo#buy-evt_test_miami_konpa\"\n      },\n      \"earn\": {\n        \"eligible\": true,\n        \"amount\": 4,\n        \"currency\": \"USD\",\n        \"description\": \"$4 per eligible ticket\"\n      },\n      \"can_share\": true,\n      \"url\": \"https://timtim.live/partners/docs#sandbox\",\n      \"display\": {\n        \"short_description\": \"A sample concert for developers trying TimTim.Live for the first time.\",\n        \"date_label\": \"Wed, Oct 14 · 8:00 PM\",\n        \"price_label\": \"From $30\"\n      },\n      \"organizer\": {\n        \"name\": \"TimTim.Live Sandbox\",\n        \"verified\": false\n      },\n      \"test\": true,\n      \"updated_at\": \"2026-10-07T00:00:00.000Z\",\n      \"inventory_updated_at\": \"2026-10-07T00:00:00.000Z\"\n    }\n  ],\n  \"next\": null,\n  \"notices\": [\n    \"DEMO — SAMPLE DATA. These are sample events. No real money moves.\"\n  ]\n}"
+        }
+      ]
+    },
+    {
+      "name": "Authentication",
+      "description": "Send your key as `Authorization: Bearer <key>` (set once, in the collection's `apiKey` variable). tt_test_… = sandbox, tt_pk_live_… = website key (events only), tt_sk_live_… = server key (never in a browser or a URL). Large integrations may use OAuth client credentials instead — server side only.",
+      "item": [
+        {
+          "name": "Does my key work? (one event)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/events?limit=1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "events"
+              ],
+              "query": [
+                {
+                  "key": "limit",
+                  "value": "1"
+                },
+                {
+                  "key": "country",
+                  "value": "US",
+                  "disabled": true
+                },
+                {
+                  "key": "from",
+                  "value": "2026-10-01",
+                  "disabled": true
+                },
+                {
+                  "key": "to",
+                  "value": "2026-12-31",
+                  "disabled": true
+                },
+                {
+                  "key": "changed_since",
+                  "value": "{{changedSince}}",
+                  "disabled": true
+                },
+                {
+                  "key": "commissioned",
+                  "value": "true",
+                  "disabled": true,
+                  "description": "true = only events that pay a reward."
+                },
+                {
+                  "key": "minimum_earnings",
+                  "value": "5",
+                  "disabled": true,
+                  "description": "Only events paying at least this much per ticket. Implies commissioned=true."
+                },
+                {
+                  "key": "near",
+                  "value": "Paris,FR",
+                  "disabled": true
+                },
+                {
+                  "key": "artist",
+                  "value": "Sample",
+                  "disabled": true,
+                  "description": "Performer name contains this text."
+                },
+                {
+                  "key": "lat",
+                  "value": "38.9072",
+                  "disabled": true
+                },
+                {
+                  "key": "lng",
+                  "value": "-77.0369",
+                  "disabled": true
+                },
+                {
+                  "key": "radius",
+                  "value": "50",
+                  "disabled": true,
+                  "description": "Kilometres."
+                },
+                {
+                  "key": "cursor",
+                  "value": "{{nextCursor}}",
+                  "disabled": true,
+                  "description": "The `next` value from the previous page."
+                }
+              ]
+            },
+            "description": "Upcoming events you may show, oldest first. With `changed_since`, every event that changed after that time, including ones that ended or were cancelled."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"200 OK\", () => pm.response.to.have.status(200));",
+                  "const body = pm.response.json();",
+                  "pm.test(\"a list of events\", () => pm.expect(body.object).to.eql(\"list\"));",
+                  "if (body.next) pm.collectionVariables.set(\"nextCursor\", body.next);"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "OAuth: get an access token",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/x-www-form-urlencoded"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/oauth/token",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "oauth",
+                "token"
+              ]
+            },
+            "description": "Then send {{accessToken}} as the Bearer token instead of a key. Server side only.\n\nOptional, for large integrations (RFC 6749 §4.4). Authenticate the OAuth\nclient once — HTTP Basic or client_id/client_secret in the form — and get\na one-hour bearer token to send instead of a key. Make OAuth clients on\n/partners/dashboard. The client secret is never accepted as a key.\n",
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "grant_type",
+                  "value": "client_credentials"
+                },
+                {
+                  "key": "scope",
+                  "value": "events:read events:details"
+                },
+                {
+                  "key": "client_id",
+                  "value": "{{clientId}}"
+                },
+                {
+                  "key": "client_secret",
+                  "value": "{{clientSecret}}"
+                }
+              ]
+            },
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"200 OK\", () => pm.response.to.have.status(200));",
+                  "pm.collectionVariables.set(\"accessToken\", pm.response.json().access_token);"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "OAuth: revoke a token",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/x-www-form-urlencoded"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/oauth/revoke",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "oauth",
+                "revoke"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}"
+                },
+                {
+                  "key": "client_id",
+                  "value": "{{clientId}}"
+                },
+                {
+                  "key": "client_secret",
+                  "value": "{{clientSecret}}"
+                }
+              ]
+            },
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Search Events",
+      "item": [
+        {
+          "name": "Find events",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/events?city=Washington&category=music",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "events"
+              ],
+              "query": [
+                {
+                  "key": "city",
+                  "value": "Washington"
+                },
+                {
+                  "key": "category",
+                  "value": "music"
+                },
+                {
+                  "key": "country",
+                  "value": "US",
+                  "disabled": true
+                },
+                {
+                  "key": "from",
+                  "value": "2026-10-01",
+                  "disabled": true
+                },
+                {
+                  "key": "to",
+                  "value": "2026-12-31",
+                  "disabled": true
+                },
+                {
+                  "key": "changed_since",
+                  "value": "{{changedSince}}",
+                  "disabled": true
+                },
+                {
+                  "key": "commissioned",
+                  "value": "true",
+                  "disabled": true,
+                  "description": "true = only events that pay a reward."
+                },
+                {
+                  "key": "minimum_earnings",
+                  "value": "5",
+                  "disabled": true,
+                  "description": "Only events paying at least this much per ticket. Implies commissioned=true."
+                },
+                {
+                  "key": "near",
+                  "value": "Paris,FR",
+                  "disabled": true
+                },
+                {
+                  "key": "artist",
+                  "value": "Sample",
+                  "disabled": true,
+                  "description": "Performer name contains this text."
+                },
+                {
+                  "key": "lat",
+                  "value": "38.9072",
+                  "disabled": true
+                },
+                {
+                  "key": "lng",
+                  "value": "-77.0369",
+                  "disabled": true
+                },
+                {
+                  "key": "radius",
+                  "value": "50",
+                  "disabled": true,
+                  "description": "Kilometres."
+                },
+                {
+                  "key": "limit",
+                  "value": "20",
+                  "disabled": true
+                },
+                {
+                  "key": "cursor",
+                  "value": "{{nextCursor}}",
+                  "disabled": true,
+                  "description": "The `next` value from the previous page."
+                }
+              ]
+            },
+            "description": "Upcoming events you may show, oldest first. With `changed_since`, every event that changed after that time, including ones that ended or were cancelled."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"200 OK\", () => pm.response.to.have.status(200));",
+                  "const body = pm.response.json();",
+                  "pm.test(\"a list of events\", () => pm.expect(body.object).to.eql(\"list\"));",
+                  "if (body.next) pm.collectionVariables.set(\"nextCursor\", body.next);"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "Next page (uses {{nextCursor}})",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/events?city=Washington&cursor={{nextCursor}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "events"
+              ],
+              "query": [
+                {
+                  "key": "city",
+                  "value": "Washington"
+                },
+                {
+                  "key": "cursor",
+                  "value": "{{nextCursor}}",
+                  "description": "The `next` value from the previous page."
+                },
+                {
+                  "key": "country",
+                  "value": "US",
+                  "disabled": true
+                },
+                {
+                  "key": "from",
+                  "value": "2026-10-01",
+                  "disabled": true
+                },
+                {
+                  "key": "to",
+                  "value": "2026-12-31",
+                  "disabled": true
+                },
+                {
+                  "key": "changed_since",
+                  "value": "{{changedSince}}",
+                  "disabled": true
+                },
+                {
+                  "key": "commissioned",
+                  "value": "true",
+                  "disabled": true,
+                  "description": "true = only events that pay a reward."
+                },
+                {
+                  "key": "minimum_earnings",
+                  "value": "5",
+                  "disabled": true,
+                  "description": "Only events paying at least this much per ticket. Implies commissioned=true."
+                },
+                {
+                  "key": "near",
+                  "value": "Paris,FR",
+                  "disabled": true
+                },
+                {
+                  "key": "artist",
+                  "value": "Sample",
+                  "disabled": true,
+                  "description": "Performer name contains this text."
+                },
+                {
+                  "key": "lat",
+                  "value": "38.9072",
+                  "disabled": true
+                },
+                {
+                  "key": "lng",
+                  "value": "-77.0369",
+                  "disabled": true
+                },
+                {
+                  "key": "radius",
+                  "value": "50",
+                  "disabled": true,
+                  "description": "Kilometres."
+                },
+                {
+                  "key": "limit",
+                  "value": "20",
+                  "disabled": true
+                }
+              ]
+            },
+            "description": "Upcoming events you may show, oldest first. With `changed_since`, every event that changed after that time, including ones that ended or were cancelled."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"200 OK\", () => pm.response.to.have.status(200));",
+                  "const body = pm.response.json();",
+                  "pm.test(\"a list of events\", () => pm.expect(body.object).to.eql(\"list\"));",
+                  "if (body.next) pm.collectionVariables.set(\"nextCursor\", body.next);"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "Sample events with every demo filter (no key)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/demo/events?city=Paris",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "demo",
+                "events"
+              ],
+              "query": [
+                {
+                  "key": "city",
+                  "value": "Paris"
+                },
+                {
+                  "key": "country",
+                  "value": "US",
+                  "disabled": true
+                },
+                {
+                  "key": "from",
+                  "value": "2026-10-01",
+                  "disabled": true
+                },
+                {
+                  "key": "to",
+                  "value": "2026-12-31",
+                  "disabled": true
+                },
+                {
+                  "key": "near",
+                  "value": "Paris,FR",
+                  "disabled": true
+                },
+                {
+                  "key": "artist",
+                  "value": "Sample",
+                  "disabled": true
+                },
+                {
+                  "key": "limit",
+                  "value": "20",
+                  "disabled": true
+                },
+                {
+                  "key": "cursor",
+                  "value": "{{nextCursor}}",
+                  "disabled": true
+                }
+              ]
+            },
+            "description": "The same answer as `GET /events` for a test key — sample events only,\nevery name starting \"TEST EVENT — NO REAL MONEY\" — with no key and no\nsign-up. Readable from any website (CORS `*`). This is what\nhttps://timtim.live/developers/demo and the widget with no `data-key` call.\n\n`simulate` (sandbox only) shows how your code should behave on a bad day:\n`sold_out`, `cancelled`, `rescheduled` and `postponed` change every sample\nevent; `invalid_key` and `rate_limited` answer with the exact problem a real\nkey would get (401, and 429 with `Retry-After`).\n",
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"200 OK\", () => pm.response.to.have.status(200));",
+                  "const body = pm.response.json();",
+                  "pm.test(\"a list of events\", () => pm.expect(body.object).to.eql(\"list\"));",
+                  "if (body.next) pm.collectionVariables.set(\"nextCursor\", body.next);"
+                ]
+              }
+            }
+          ],
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Get Event",
+      "item": [
+        {
+          "name": "One event",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/events/:id",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "events",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "{{eventId}}"
+                }
+              ]
+            },
+            "description": "Returned even after it ended or was cancelled, so you can take it down."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"200 OK\", () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ],
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Changed Events",
+      "description": "Keep your copy in sync: ask for everything that changed after a time. Update each event; stop showing every id in `withdrawn` (always empty for a test key).",
+      "item": [
+        {
+          "name": "Changed since {{changedSince}}",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/events?changed_since={{changedSince}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "events"
+              ],
+              "query": [
+                {
+                  "key": "changed_since",
+                  "value": "{{changedSince}}"
+                },
+                {
+                  "key": "country",
+                  "value": "US",
+                  "disabled": true
+                },
+                {
+                  "key": "from",
+                  "value": "2026-10-01",
+                  "disabled": true
+                },
+                {
+                  "key": "to",
+                  "value": "2026-12-31",
+                  "disabled": true
+                },
+                {
+                  "key": "commissioned",
+                  "value": "true",
+                  "disabled": true,
+                  "description": "true = only events that pay a reward."
+                },
+                {
+                  "key": "minimum_earnings",
+                  "value": "5",
+                  "disabled": true,
+                  "description": "Only events paying at least this much per ticket. Implies commissioned=true."
+                },
+                {
+                  "key": "near",
+                  "value": "Paris,FR",
+                  "disabled": true
+                },
+                {
+                  "key": "artist",
+                  "value": "Sample",
+                  "disabled": true,
+                  "description": "Performer name contains this text."
+                },
+                {
+                  "key": "lat",
+                  "value": "38.9072",
+                  "disabled": true
+                },
+                {
+                  "key": "lng",
+                  "value": "-77.0369",
+                  "disabled": true
+                },
+                {
+                  "key": "radius",
+                  "value": "50",
+                  "disabled": true,
+                  "description": "Kilometres."
+                },
+                {
+                  "key": "limit",
+                  "value": "20",
+                  "disabled": true
+                },
+                {
+                  "key": "cursor",
+                  "value": "{{nextCursor}}",
+                  "disabled": true,
+                  "description": "The `next` value from the previous page."
+                }
+              ]
+            },
+            "description": "Upcoming events you may show, oldest first. With `changed_since`, every event that changed after that time, including ones that ended or were cancelled."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"200 OK\", () => pm.response.to.have.status(200));",
+                  "const body = pm.response.json();",
+                  "pm.test(\"a list of events\", () => pm.expect(body.object).to.eql(\"list\"));",
+                  "if (body.next) pm.collectionVariables.set(\"nextCursor\", body.next);"
+                ]
+              }
+            }
+          ],
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Sandbox Transaction",
+      "description": "Embedded commerce with a TEST key: see the sample ticket types, hold tickets (POST /orders with an Idempotency-Key), then check the order. No real money moves.",
+      "item": [
+        {
+          "name": "Ticket types for {{eventId}}",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/events/:id/tickets",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "events",
+                ":id",
+                "tickets"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "{{eventId}}"
+                }
+              ]
+            },
+            "description": "The paid ticket types on sale for one event, with the all-in price to\nshow (fees and tax included). Free tickets are not sold through orders —\nuse the event's buy_url. Server keys only. A LIVE key needs the\nEMBEDDED_CHECKOUT capability (granted by TimTim.Live after review) and\nTimTim.Live card payments switched on; a test key always gets a sample.\n"
+          },
+          "response": []
+        },
+        {
+          "name": "Create a test order",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Idempotency-Key",
+                "value": "{{$guid}}",
+                "description": "8–80 of A-Z a-z 0-9 _ -. Reuse the same key when you retry the same order."
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/orders",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "orders"
+              ]
+            },
+            "description": "Embedded commerce (§145): your app collects the choice and the buyer;\nTimTim.Live holds the tickets for about 30 minutes and returns\n`checkout_url` — TimTim.Live's payment page on the organizer's own\naccount. Open it for the buyer (a new tab or an in-app browser). Card\ndetails never pass through the API. The sale is credited to your company\ndirectly — no click, no cookie, no postback — under the same rules and\nlimits as a buy_url. Send an `Idempotency-Key`: the same key returns the\nsame order, never a second hold. Server keys only; same access rules as\n/events/{id}/tickets.\n",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"event_id\": \"{{eventId}}\",\n  \"ticket_type_id\": \"{{ticketTypeId}}\",\n  \"quantity\": 2,\n  \"buyer_email\": \"buyer@example.com\",\n  \"buyer_name\": \"Test Buyer\",\n  \"sub_id\": \"click-42\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"200 OK\", () => pm.response.to.have.status(200));",
+                  "pm.collectionVariables.set(\"orderId\", pm.response.json().id);"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "Check the order",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/orders/:id",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "orders",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "{{orderId}}"
+                }
+              ]
+            },
+            "description": "Status only — never the buyer's name or email. `checkout_url` is included only while the order is still awaiting payment."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Webhooks",
+      "description": "TimTim.Live POSTs to your endpoint when an event changes (event.changed) or an earning changes (earnings.changed). These requests let you test YOUR endpoint with correctly signed deliveries. Set webhookUrl and webhookSecret first.",
+      "item": [
+        {
+          "name": "event.changed (cancelled) → your endpoint",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "TimTim-Delivery-Id",
+                "value": "{{$guid}}"
+              }
+            ],
+            "url": {
+              "raw": "{{webhookUrl}}",
+              "host": [
+                "{{webhookUrl}}"
+              ]
+            },
+            "auth": {
+              "type": "noauth"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\"id\":\"whd_example_1\",\"type\":\"event.changed\",\"created_at\":\"2026-10-06T15:04:05.000Z\",\"mode\":\"live\",\"data\":{\"event\":{\"id\":\"evt_example_live_1\",\"name\":\"Example Festival (illustrative)\",\"status\":\"cancelled\",\"starts_at\":null,\"ends_at\":null,\"date\":\"2026-10-11\",\"timezone\":null,\"location\":{\"venue\":\"Sample Music Hall\",\"address\":null,\"city\":\"Washington\",\"country\":\"US\",\"lat\":38.9072,\"lng\":-77.0369},\"image\":null,\"category\":\"music\",\"performers\":[{\"name\":\"Sample Konpa Band\"},{\"name\":\"Sample DJ\"}],\"tickets\":{\"from\":45,\"to\":90,\"currency\":\"USD\",\"availability\":\"ended\",\"buy_url\":\"https://timtim.live/b/EXAMPLE\"},\"earn\":{\"eligible\":true,\"amount\":5,\"currency\":\"USD\",\"description\":\"$5 per eligible ticket\"},\"can_share\":true,\"url\":\"https://timtim.live/events/example\",\"display\":{\"short_description\":null,\"date_label\":\"Sun, Oct 11 · 7:00 PM\",\"price_label\":\"From $45\"},\"organizer\":{\"name\":\"Example Organizer\",\"verified\":true},\"test\":false,\"updated_at\":\"2026-10-07T00:00:00.000Z\",\"inventory_updated_at\":\"2026-10-07T00:00:00.000Z\"}}}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "description": "Sends an illustrative event.changed delivery to YOUR endpoint ({{webhookUrl}}), signed with {{webhookSecret}} the same way TimTim.Live signs: `TimTim-Signature: t=<unix seconds>,v1=<hex HMAC-SHA256 of \"<t>.<raw body>\">`. Your endpoint should check it in constant time, refuse anything older than 300 seconds, use TimTim-Delivery-Id to ignore repeats, and answer 2xx within 10 seconds."
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// Signs the body exactly like TimTim.Live: HMAC-SHA256(secret, `${t}.${body}`) as hex.",
+                  "const t = Math.floor(Date.now() / 1000).toString();",
+                  "const body = pm.request.body.raw;",
+                  "const v1 = CryptoJS.HmacSHA256(`${t}.${body}`, pm.variables.get(\"webhookSecret\")).toString(CryptoJS.enc.Hex); // pm.variables: an environment value wins over the collection default",
+                  "pm.request.headers.upsert({ key: \"TimTim-Signature\", value: `t=${t},v1=${v1}` });",
+                  "pm.request.headers.upsert({ key: \"TimTim-Timestamp\", value: t });",
+                  "pm.request.headers.upsert({ key: \"TimTim-Event\", value: \"event.changed\" });"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"your endpoint accepted the signed delivery (2xx)\", () => pm.expect(pm.response.code).to.be.within(200, 299));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "event.changed (withdrawn) → your endpoint",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "TimTim-Delivery-Id",
+                "value": "{{$guid}}"
+              }
+            ],
+            "url": {
+              "raw": "{{webhookUrl}}",
+              "host": [
+                "{{webhookUrl}}"
+              ]
+            },
+            "auth": {
+              "type": "noauth"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\"id\":\"whd_example_2\",\"type\":\"event.changed\",\"created_at\":\"2026-10-06T15:05:00.000Z\",\"mode\":\"live\",\"data\":{\"withdrawn\":{\"id\":\"evt_example_live_2\",\"withdrawn_at\":\"2026-10-06T15:05:00.000Z\"}}}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "description": "Sends an illustrative event.changed delivery to YOUR endpoint ({{webhookUrl}}), signed with {{webhookSecret}} the same way TimTim.Live signs: `TimTim-Signature: t=<unix seconds>,v1=<hex HMAC-SHA256 of \"<t>.<raw body>\">`. Your endpoint should check it in constant time, refuse anything older than 300 seconds, use TimTim-Delivery-Id to ignore repeats, and answer 2xx within 10 seconds."
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// Signs the body exactly like TimTim.Live: HMAC-SHA256(secret, `${t}.${body}`) as hex.",
+                  "const t = Math.floor(Date.now() / 1000).toString();",
+                  "const body = pm.request.body.raw;",
+                  "const v1 = CryptoJS.HmacSHA256(`${t}.${body}`, pm.variables.get(\"webhookSecret\")).toString(CryptoJS.enc.Hex); // pm.variables: an environment value wins over the collection default",
+                  "pm.request.headers.upsert({ key: \"TimTim-Signature\", value: `t=${t},v1=${v1}` });",
+                  "pm.request.headers.upsert({ key: \"TimTim-Timestamp\", value: t });",
+                  "pm.request.headers.upsert({ key: \"TimTim-Event\", value: \"event.changed\" });"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"your endpoint accepted the signed delivery (2xx)\", () => pm.expect(pm.response.code).to.be.within(200, 299));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "earnings.changed (refund: reversed) → your endpoint",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "TimTim-Delivery-Id",
+                "value": "{{$guid}}"
+              }
+            ],
+            "url": {
+              "raw": "{{webhookUrl}}",
+              "host": [
+                "{{webhookUrl}}"
+              ]
+            },
+            "auth": {
+              "type": "noauth"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\"id\":\"whd_example_3\",\"type\":\"earnings.changed\",\"created_at\":\"2026-10-05T09:00:01.000Z\",\"mode\":\"live\",\"data\":{\"earning\":{\"sale_id\":\"sale_example_1\",\"event_id\":\"evt_example_live_1\",\"transaction_value\":90,\"commission\":-10,\"currency\":\"USD\",\"status\":\"reversed\",\"reason\":\"refund\",\"created_at\":\"2026-10-05T09:00:00.000Z\",\"test\":false,\"sub_id\":\"click-42\"}}}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "description": "Sends an illustrative earnings.changed delivery to YOUR endpoint ({{webhookUrl}}), signed with {{webhookSecret}} the same way TimTim.Live signs: `TimTim-Signature: t=<unix seconds>,v1=<hex HMAC-SHA256 of \"<t>.<raw body>\">`. Your endpoint should check it in constant time, refuse anything older than 300 seconds, use TimTim-Delivery-Id to ignore repeats, and answer 2xx within 10 seconds."
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// Signs the body exactly like TimTim.Live: HMAC-SHA256(secret, `${t}.${body}`) as hex.",
+                  "const t = Math.floor(Date.now() / 1000).toString();",
+                  "const body = pm.request.body.raw;",
+                  "const v1 = CryptoJS.HmacSHA256(`${t}.${body}`, pm.variables.get(\"webhookSecret\")).toString(CryptoJS.enc.Hex); // pm.variables: an environment value wins over the collection default",
+                  "pm.request.headers.upsert({ key: \"TimTim-Signature\", value: `t=${t},v1=${v1}` });",
+                  "pm.request.headers.upsert({ key: \"TimTim-Timestamp\", value: t });",
+                  "pm.request.headers.upsert({ key: \"TimTim-Event\", value: \"earnings.changed\" });"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"your endpoint accepted the signed delivery (2xx)\", () => pm.expect(pm.response.code).to.be.within(200, 299));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Errors",
+      "description": "Every error is application/problem+json with type, title, status, detail, request_id and code. These need no key.",
+      "item": [
+        {
+          "name": "401 — bad key (simulated)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/demo/events?simulate=invalid_key",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "demo",
+                "events"
+              ],
+              "query": [
+                {
+                  "key": "simulate",
+                  "value": "invalid_key",
+                  "description": "Sandbox only. See above."
+                }
+              ]
+            },
+            "description": "The same answer as `GET /events` for a test key — sample events only,\nevery name starting \"TEST EVENT — NO REAL MONEY\" — with no key and no\nsign-up. Readable from any website (CORS `*`). This is what\nhttps://timtim.live/developers/demo and the widget with no `data-key` call.\n\n`simulate` (sandbox only) shows how your code should behave on a bad day:\n`sold_out`, `cancelled`, `rescheduled` and `postponed` change every sample\nevent; `invalid_key` and `rate_limited` answer with the exact problem a real\nkey would get (401, and 429 with `Retry-After`).\n",
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"401\", () => pm.response.to.have.status(401));",
+                  "const p = pm.response.json();",
+                  "pm.test(\"a problem with a request_id\", () => { pm.expect(p.title).to.be.a(\"string\"); pm.expect(p.request_id).to.match(/^req_/); });"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "401 (captured)",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/demo/events?simulate=invalid_key",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "demo",
+                    "events"
+                  ]
+                }
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/problem+json"
+                }
+              ],
+              "body": "{\n  \"type\": \"https://timtim.live/partners/docs#problem-invalid-key\",\n  \"title\": \"We do not recognise that key.\",\n  \"status\": 401,\n  \"detail\": \"Check you copied the whole key, or make a new one at /partners/dashboard.\",\n  \"request_id\": \"req_Zkozq2uzd80\",\n  \"code\": \"invalid_key\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "429 — too many requests (simulated)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/demo/events?simulate=rate_limited",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "demo",
+                "events"
+              ],
+              "query": [
+                {
+                  "key": "simulate",
+                  "value": "rate_limited",
+                  "description": "Sandbox only. See above."
+                }
+              ]
+            },
+            "description": "The same answer as `GET /events` for a test key — sample events only,\nevery name starting \"TEST EVENT — NO REAL MONEY\" — with no key and no\nsign-up. Readable from any website (CORS `*`). This is what\nhttps://timtim.live/developers/demo and the widget with no `data-key` call.\n\n`simulate` (sandbox only) shows how your code should behave on a bad day:\n`sold_out`, `cancelled`, `rescheduled` and `postponed` change every sample\nevent; `invalid_key` and `rate_limited` answer with the exact problem a real\nkey would get (401, and 429 with `Retry-After`).\n",
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"429\", () => pm.response.to.have.status(429));",
+                  "const p = pm.response.json();",
+                  "pm.test(\"a problem with a request_id\", () => { pm.expect(p.title).to.be.a(\"string\"); pm.expect(p.request_id).to.match(/^req_/); });",
+                  "pm.test(\"Retry-After\", () => pm.response.to.have.header(\"Retry-After\"));"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "429 (captured)",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/demo/events?simulate=rate_limited",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "demo",
+                    "events"
+                  ]
+                }
+              },
+              "status": "Too Many Requests",
+              "code": 429,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/problem+json"
+                }
+              ],
+              "body": "{\n  \"type\": \"https://timtim.live/partners/docs#problem-rate-limited\",\n  \"title\": \"Too many requests — please slow down.\",\n  \"status\": 429,\n  \"detail\": \"Wait the number of seconds in Retry-After, then try again.\",\n  \"request_id\": \"req_eatCycuS0HQ\",\n  \"code\": \"rate_limited\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "400 — unknown parameter",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/demo/events?colour=blue",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "demo",
+                "events"
+              ],
+              "query": [
+                {
+                  "key": "colour",
+                  "value": "blue"
+                }
+              ]
+            },
+            "description": "The same answer as `GET /events` for a test key — sample events only,\nevery name starting \"TEST EVENT — NO REAL MONEY\" — with no key and no\nsign-up. Readable from any website (CORS `*`). This is what\nhttps://timtim.live/developers/demo and the widget with no `data-key` call.\n\n`simulate` (sandbox only) shows how your code should behave on a bad day:\n`sold_out`, `cancelled`, `rescheduled` and `postponed` change every sample\nevent; `invalid_key` and `rate_limited` answer with the exact problem a real\nkey would get (401, and 429 with `Retry-After`).\n",
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"400\", () => pm.response.to.have.status(400));",
+                  "const p = pm.response.json();",
+                  "pm.test(\"a problem with a request_id\", () => { pm.expect(p.title).to.be.a(\"string\"); pm.expect(p.request_id).to.match(/^req_/); });"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "400 (captured)",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/demo/events?colour=blue",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "demo",
+                    "events"
+                  ]
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/problem+json"
+                }
+              ],
+              "body": "{\n  \"type\": \"https://timtim.live/partners/docs#problem-unknown-parameter\",\n  \"title\": \"We do not know one of those parameters.\",\n  \"status\": 400,\n  \"detail\": \"We do not know the parameter \\\"colour\\\". Remove it, or see /partners/docs for the list.\",\n  \"request_id\": \"req_in7QAgTxukk\",\n  \"code\": \"unknown_parameter\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Cancelled event (simulated)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/demo/events?city=Miami&simulate=cancelled",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "demo",
+                "events"
+              ],
+              "query": [
+                {
+                  "key": "city",
+                  "value": "Miami"
+                },
+                {
+                  "key": "simulate",
+                  "value": "cancelled",
+                  "description": "Sandbox only. See above."
+                }
+              ]
+            },
+            "description": "The same answer as `GET /events` for a test key — sample events only,\nevery name starting \"TEST EVENT — NO REAL MONEY\" — with no key and no\nsign-up. Readable from any website (CORS `*`). This is what\nhttps://timtim.live/developers/demo and the widget with no `data-key` call.\n\n`simulate` (sandbox only) shows how your code should behave on a bad day:\n`sold_out`, `cancelled`, `rescheduled` and `postponed` change every sample\nevent; `invalid_key` and `rate_limited` answer with the exact problem a real\nkey would get (401, and 429 with `Retry-After`).\n",
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"200 OK\", () => pm.response.to.have.status(200));",
+                  "const body = pm.response.json();",
+                  "pm.test(\"a list of events\", () => pm.expect(body.object).to.eql(\"list\"));",
+                  "if (body.next) pm.collectionVariables.set(\"nextCursor\", body.next);",
+                  "pm.test(\"every event cancelled\", () => body.events.forEach((e) => pm.expect(e.status).to.eql(\"cancelled\")));"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "Sold out (simulated)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/demo/events?city=Miami&simulate=sold_out",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "demo",
+                "events"
+              ],
+              "query": [
+                {
+                  "key": "city",
+                  "value": "Miami"
+                },
+                {
+                  "key": "simulate",
+                  "value": "sold_out",
+                  "description": "Sandbox only. See above."
+                }
+              ]
+            },
+            "description": "The same answer as `GET /events` for a test key — sample events only,\nevery name starting \"TEST EVENT — NO REAL MONEY\" — with no key and no\nsign-up. Readable from any website (CORS `*`). This is what\nhttps://timtim.live/developers/demo and the widget with no `data-key` call.\n\n`simulate` (sandbox only) shows how your code should behave on a bad day:\n`sold_out`, `cancelled`, `rescheduled` and `postponed` change every sample\nevent; `invalid_key` and `rate_limited` answer with the exact problem a real\nkey would get (401, and 429 with `Retry-After`).\n",
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"200 OK\", () => pm.response.to.have.status(200));",
+                  "const body = pm.response.json();",
+                  "pm.test(\"a list of events\", () => pm.expect(body.object).to.eql(\"list\"));",
+                  "if (body.next) pm.collectionVariables.set(\"nextCursor\", body.next);"
+                ]
+              }
+            }
+          ],
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Earnings, Offers, Statements and Feeds",
+      "description": "Server keys (tt_sk_live_…) or test keys.",
+      "item": [
+        {
+          "name": "Your earnings",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/earnings",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "earnings"
+              ]
+            },
+            "description": "Sales that came through your buy links and what they earned. Never a buyer's name, email, address, phone or card. Needs a server key (tt_sk_live_) or a test key."
+          },
+          "response": []
+        },
+        {
+          "name": "Card-linked offers",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/offers?country=US",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "offers"
+              ],
+              "query": [
+                {
+                  "key": "country",
+                  "value": "US"
+                },
+                {
+                  "key": "city",
+                  "value": "",
+                  "disabled": true
+                },
+                {
+                  "key": "category",
+                  "value": "",
+                  "disabled": true
+                },
+                {
+                  "key": "from",
+                  "value": "2026-10-01",
+                  "disabled": true
+                },
+                {
+                  "key": "to",
+                  "value": "2026-12-31",
+                  "disabled": true
+                },
+                {
+                  "key": "changed_since",
+                  "value": "{{changedSince}}",
+                  "disabled": true
+                },
+                {
+                  "key": "minimum_earnings",
+                  "value": "5",
+                  "disabled": true
+                },
+                {
+                  "key": "near",
+                  "value": "Paris,FR",
+                  "disabled": true
+                },
+                {
+                  "key": "limit",
+                  "value": "20",
+                  "disabled": true
+                },
+                {
+                  "key": "cursor",
+                  "value": "{{nextCursor}}",
+                  "disabled": true
+                }
+              ]
+            },
+            "description": "Events that pay a reward right now, shaped as offers a bank or rewards\nprogramme can show its customers: merchant, eligible dates, price,\ndestination and the commercial rules. Same filters and paging as\n/events (commissioned=true is always applied).\n\nEnterprise: a LIVE key needs the CARD_LINKED_OFFERS capability, granted\nby TimTim.Live after review. A test key always gets sample offers.\nServer keys only (tt_sk_live_ or a test key) — never a website key.\n\nActivation is your tracked link (`activation.url`); rewards are paid to\nyour partner account and reported by /earnings. Matching card\ntransactions directly needs a card-network or bank agreement with\nTimTim.Live, which is not in place, so `matching.card_transactions` is\nfalse. Tickets are charged by each organizer's own payment account, so\n`merchant.statement_descriptor` is null rather than guessed.\n"
+          },
+          "response": []
+        },
+        {
+          "name": "Monthly statements",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/settlements",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "settlements"
+              ]
+            },
+            "description": "For companies paid under agreed settlement terms. Once a calendar month\n(UTC) has closed, the money Ready for you goes on one statement, paid\n`net_days` after the month ends; under the agreed minimum it is carried\nto the next month. READ ONLY — how and where you are paid is agreed with\nTimTim.Live and can never be changed with a key. Needs a secret key or a\ntest key (test keys see none). Each statement's lines are the same\nrecords /earnings gives.\n"
+          },
+          "response": []
+        },
+        {
+          "name": "Feed (RSS) with the key in the URL",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/feeds/:file?key={{apiKey}}&city=Paris",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "feeds",
+                ":file"
+              ],
+              "query": [
+                {
+                  "key": "key",
+                  "value": "{{apiKey}}"
+                },
+                {
+                  "key": "city",
+                  "value": "Paris"
+                }
+              ],
+              "variable": [
+                {
+                  "key": "file",
+                  "value": "events.rss"
+                }
+              ]
+            },
+            "description": "Website or test keys only — a server key is refused in a URL.\n\nevents.json (JSON Feed 1.1), events.rss (RSS 2.0), events.xml or events.csv —\nthe same events, filters and rights as GET /events. Feed readers cannot send\nheaders, so a website key (tt_pk_live_) or test key may be given as ?key=.\nA server key is refused in a URL.\n",
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Bulk feed file",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/bulk/:file",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "bulk",
+                ":file"
+              ],
+              "query": [
+                {
+                  "key": "changed_since",
+                  "value": "{{changedSince}}",
+                  "disabled": true
+                }
+              ],
+              "variable": [
+                {
+                  "key": "file",
+                  "value": "{{bulkFile}}"
+                }
+              ]
+            },
+            "description": "Save up to 5 subscriptions on /partners/dashboard (countries,\ncategories, days ahead, reward-paying only). `file` is\n`<subscription id>.ndjson.gz` (one public Event per line — the same\nobject /events returns) or `<subscription id>.csv.gz` (the feed's CSV\ncolumns). The file is made from the live events each time, through the\nsame rights rule and your agreement; a subscription can only narrow\nwhat your agreement allows. Server keys only, as an Authorization\nheader. A LIVE key needs the BULK_FEEDS capability; a test key gets the\nsample events. A full file at most every 15 minutes per subscription\n(429 with Retry-After otherwise). `changed_since` makes a changes-only\nfile — not rate-limited beyond your key — and, in NDJSON, adds\n`{\"object\":\"withdrawn\",\"id\":…,\"withdrawn_at\":…}` lines for events to\ntake down. At most 250,000 events per file. A file that ends\nearly is not valid gzip — retry rather than load it.\n"
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}

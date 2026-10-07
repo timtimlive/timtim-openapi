@@ -1,0 +1,33 @@
+name: Integration request
+description: Ask for TimTim.Live events in a platform, framework or tool we do not cover yet.
+labels: ["integration"]
+body:
+  - type: input
+    id: platform
+    attributes:
+      label: Platform, framework or tool
+      placeholder: Vue, Svelte, Shopify, Squarespace, Webflow, Python, PHP ...
+    validations:
+      required: true
+  - type: textarea
+    id: use
+    attributes:
+      label: What would you build with it?
+    validations:
+      required: true
+  - type: textarea
+    id: today
+    attributes:
+      label: What do you use today?
+      description: For example the hosted widget, the REST API, or nothing yet.
+  - type: checkboxes
+    id: help
+    attributes:
+      label: Could you help?
+      options:
+        - label: I could test an early version.
+        - label: I could write some of the code.
+  - type: markdown
+    attributes:
+      value: |
+        For a business partnership (rewards, embedded tickets, bulk feeds), see https://timtim.live/partners.

@@ -1,0 +1,62 @@
+{
+  "id": "whd_example_1",
+  "type": "event.changed",
+  "created_at": "2026-10-06T15:04:05.000Z",
+  "mode": "live",
+  "data": {
+    "event": {
+      "id": "evt_example_live_1",
+      "name": "Example Festival (illustrative)",
+      "status": "cancelled",
+      "starts_at": null,
+      "ends_at": null,
+      "date": "2026-10-11",
+      "timezone": null,
+      "location": {
+        "venue": "Sample Music Hall",
+        "address": null,
+        "city": "Washington",
+        "country": "US",
+        "lat": 38.9072,
+        "lng": -77.0369
+      },
+      "image": null,
+      "category": "music",
+      "performers": [
+        {
+          "name": "Sample Konpa Band"
+        },
+        {
+          "name": "Sample DJ"
+        }
+      ],
+      "tickets": {
+        "from": 45,
+        "to": 90,
+        "currency": "USD",
+        "availability": "ended",
+        "buy_url": "https://timtim.live/b/EXAMPLE"
+      },
+      "earn": {
+        "eligible": true,
+        "amount": 5,
+        "currency": "USD",
+        "description": "$5 per eligible ticket"
+      },
+      "can_share": true,
+      "url": "https://timtim.live/events/example",
+      "display": {
+        "short_description": null,
+        "date_label": "Sun, Oct 11 · 7:00 PM",
+        "price_label": "From $45"
+      },
+      "organizer": {
+        "name": "Example Organizer",
+        "verified": true
+      },
+      "test": false,
+      "updated_at": "2026-10-07T00:00:00.000Z",
+      "inventory_updated_at": "2026-10-07T00:00:00.000Z"
+    }
+  }
+}

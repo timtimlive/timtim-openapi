@@ -1,0 +1,269 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/timtimlive/timtim-openapi/main/schemas/Event.schema.json",
+  "title": "Event",
+  "$comment": "GENERATED from openapi.yaml by scripts/generate.mjs. Do not edit.",
+  "type": "object",
+  "required": [
+    "id",
+    "name",
+    "status",
+    "starts_at",
+    "ends_at",
+    "date",
+    "timezone",
+    "location",
+    "image",
+    "category",
+    "performers",
+    "tickets",
+    "earn",
+    "can_share",
+    "url",
+    "display",
+    "organizer",
+    "test",
+    "updated_at",
+    "inventory_updated_at"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "examples": [
+        "evt_test_washington_konpa"
+      ]
+    },
+    "name": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "scheduled",
+        "postponed",
+        "rescheduled",
+        "cancelled",
+        "sold_out",
+        "completed"
+      ]
+    },
+    "starts_at": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date-time",
+      "description": "Exact start, when the organizer gave one."
+    },
+    "ends_at": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date-time"
+    },
+    "date": {
+      "type": "string",
+      "format": "date",
+      "description": "The day as the venue calls it."
+    },
+    "timezone": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "location": {
+      "type": "object",
+      "properties": {
+        "venue": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "address": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "city": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "country": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "lat": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "lng": {
+          "type": [
+            "number",
+            "null"
+          ]
+        }
+      }
+    },
+    "image": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "uri"
+    },
+    "category": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "performers": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "tickets": {
+      "type": "object",
+      "properties": {
+        "from": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "to": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "currency": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "availability": {
+          "type": "string",
+          "enum": [
+            "available",
+            "limited",
+            "sold_out",
+            "not_on_sale",
+            "ended"
+          ]
+        },
+        "buy_url": {
+          "type": "string",
+          "format": "uri",
+          "description": "Use this link exactly as given. It carries your attribution. Optional: add ?sub_id=YOUR_CLICK_ID (letters, digits, . _ ~ -, up to 100) and the sale carries it back as Earning.sub_id and in postbacks."
+        }
+      }
+    },
+    "earn": {
+      "type": "object",
+      "required": [
+        "eligible"
+      ],
+      "properties": {
+        "eligible": {
+          "type": "boolean"
+        },
+        "amount": {
+          "type": "number",
+          "description": "A fixed reward per eligible ticket."
+        },
+        "percent": {
+          "type": "number",
+          "description": "A share of each eligible ticket."
+        },
+        "currency": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string",
+          "examples": [
+            "$5 per eligible ticket"
+          ]
+        }
+      }
+    },
+    "can_share": {
+      "type": "boolean"
+    },
+    "url": {
+      "type": "string",
+      "format": "uri",
+      "description": "The event's public page."
+    },
+    "display": {
+      "type": "object",
+      "description": "Ready-made words for your card. For display only, never for accounting.",
+      "properties": {
+        "short_description": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "date_label": {
+          "type": "string",
+          "examples": [
+            "Sat, Oct 10 · 7:00 PM"
+          ]
+        },
+        "price_label": {
+          "type": "string",
+          "examples": [
+            "From $45"
+          ]
+        }
+      }
+    },
+    "organizer": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "verified": {
+          "type": "boolean"
+        }
+      }
+    },
+    "test": {
+      "type": "boolean",
+      "description": "True for sandbox events."
+    },
+    "updated_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "inventory_updated_at": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date-time"
+    }
+  }
+}

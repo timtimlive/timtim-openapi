@@ -1,0 +1,49 @@
+name: Bug report
+description: Something does not work the way the docs say it should.
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting. **Security problems do not go here** — use "Report a vulnerability" on the Security tab.
+        Never paste a key, token or real customer data. A sandbox key (`tt_test_…`) and sample events are perfect for showing a bug.
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened?
+      description: What did you do, what did you expect, and what happened instead?
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      description: The smallest code or steps that show the problem.
+      placeholder: |
+        1. new TimTimEvents()
+        2. await tt.events.list({ city: "Miami" })
+        3. ...
+    validations:
+      required: true
+  - type: input
+    id: request_id
+    attributes:
+      label: request_id (if the API answered)
+      description: From the error or the TimTim-Request-Id header, e.g. req_8F3kmQx2.
+  - type: input
+    id: version
+    attributes:
+      label: Version or commit
+      placeholder: 0.1.0 or a commit SHA
+  - type: input
+    id: environment
+    attributes:
+      label: Where it runs
+      placeholder: Node 22 / Chrome 140 / Next.js 16 / WordPress 6.8 ...
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Before you send
+      options:
+        - label: I removed every key, token and piece of personal data from this report.
+          required: true

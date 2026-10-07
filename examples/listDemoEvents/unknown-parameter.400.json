@@ -1,0 +1,8 @@
+{
+  "type": "https://timtim.live/partners/docs#problem-unknown-parameter",
+  "title": "We do not know one of those parameters.",
+  "status": 400,
+  "detail": "We do not know the parameter \"colour\". Remove it, or see /partners/docs for the list.",
+  "request_id": "req_in7QAgTxukk",
+  "code": "unknown_parameter"
+}

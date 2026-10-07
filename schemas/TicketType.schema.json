@@ -1,0 +1,50 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/timtimlive/timtim-openapi/main/schemas/TicketType.schema.json",
+  "title": "TicketType",
+  "$comment": "GENERATED from openapi.yaml by scripts/generate.mjs. Do not edit.",
+  "type": "object",
+  "required": [
+    "id",
+    "name",
+    "price",
+    "total_per_ticket",
+    "currency",
+    "max_per_order",
+    "available",
+    "sales"
+  ],
+  "properties": {
+    "id": {
+      "type": "string"
+    },
+    "name": {
+      "type": "string"
+    },
+    "price": {
+      "type": "number",
+      "description": "The ticket's own price."
+    },
+    "total_per_ticket": {
+      "type": "number",
+      "description": "What the buyer pays for one ticket, fees and tax included — show this number."
+    },
+    "currency": {
+      "type": "string"
+    },
+    "max_per_order": {
+      "type": "integer"
+    },
+    "available": {
+      "type": "boolean"
+    },
+    "sales": {
+      "type": "string",
+      "enum": [
+        "open",
+        "not_yet",
+        "ended"
+      ]
+    }
+  }
+}

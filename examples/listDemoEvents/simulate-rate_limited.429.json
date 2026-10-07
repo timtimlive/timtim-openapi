@@ -1,0 +1,8 @@
+{
+  "type": "https://timtim.live/partners/docs#problem-rate-limited",
+  "title": "Too many requests — please slow down.",
+  "status": 429,
+  "detail": "Wait the number of seconds in Retry-After, then try again.",
+  "request_id": "req_eatCycuS0HQ",
+  "code": "rate_limited"
+}

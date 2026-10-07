@@ -1,0 +1,58 @@
+{
+  "object": "event",
+  "mode": "test",
+  "event": {
+    "id": "evt_test_washington_konpa",
+    "name": "TEST EVENT — NO REAL MONEY · Washington Konpa Night",
+    "status": "scheduled",
+    "starts_at": null,
+    "ends_at": null,
+    "date": "2026-10-11",
+    "timezone": null,
+    "location": {
+      "venue": "Sample Music Hall",
+      "address": null,
+      "city": "Washington",
+      "country": "US",
+      "lat": 38.9072,
+      "lng": -77.0369
+    },
+    "image": null,
+    "category": "music",
+    "performers": [
+      {
+        "name": "Sample Konpa Band"
+      },
+      {
+        "name": "Sample DJ"
+      }
+    ],
+    "tickets": {
+      "from": 45,
+      "to": 90,
+      "currency": "USD",
+      "availability": "available",
+      "buy_url": "https://timtim.live/partners/demo#buy-evt_test_washington_konpa"
+    },
+    "earn": {
+      "eligible": true,
+      "amount": 5,
+      "currency": "USD",
+      "description": "$5 per eligible ticket"
+    },
+    "can_share": true,
+    "url": "https://timtim.live/partners/docs#sandbox",
+    "display": {
+      "short_description": "A sample concert for testing your integration. Nothing here is real and no money moves.",
+      "date_label": "Sun, Oct 11 · 7:00 PM",
+      "price_label": "From $45"
+    },
+    "organizer": {
+      "name": "TimTim.Live Sandbox",
+      "verified": false
+    },
+    "test": true,
+    "updated_at": "2026-10-07T00:00:00.000Z",
+    "inventory_updated_at": "2026-10-07T00:00:00.000Z"
+  }
+}

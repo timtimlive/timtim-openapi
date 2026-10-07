@@ -1,0 +1,794 @@
+openapi: 3.1.0
+# The authoritative public contract for the TimTim.Live Partner API (§63).
+# scripts/verify-partner-api.mjs fails if the fields below and the code that
+# builds them (lib/partner-api/shared.ts toPublicEvent, PUBLIC_EARNING_FIELDS)
+# drift apart. v1 only grows: new optional fields, filters and endpoints (§119).
+info:
+  title: TimTim.Live Partner API
+  version: "1.0.0"
+  summary: One API. Live Events. Trackable Commerce.
+  description: |
+    Ask TimTim.Live for events, show them, and send people to the `buy_url` we
+    give you. TimTim.Live handles tickets, checkout, refunds and attribution.
+
+    Test keys (`tt_test_…`) see sample events only — no real money moves.
+    Quick start: https://timtim.live/partners/docs
+    Status: https://timtim.live/partners/status
+  termsOfService: https://timtim.live/partners/terms
+  contact:
+    name: TimTim.Live Partnerships
+    email: bookings@timtim.live
+    url: https://timtim.live/partners
+  # The licence of this description file. Using the API is governed by the terms above.
+  license: { name: MIT, identifier: MIT }
+servers:
+  - url: https://api.timtim.live/v1
+    description: The Partner API address (since 2026-10-07).
+  - url: https://timtim.live/v1
+    description: The same API on the site's address. Still answers; use api.timtim.live for new integrations.
+security:
+  - bearer: []
+  - oauth2: [events:read, events:details, earnings:read]
+paths:
+  /events:
+    get:
+      operationId: listEvents
+      summary: Find events
+      description: Upcoming events you may show, oldest first. With `changed_since`, every event that changed after that time, including ones that ended or were cancelled.
+      parameters:
+        - { name: city, in: query, schema: { type: string }, example: Washington }
+        - { name: country, in: query, schema: { type: string, pattern: "^[A-Za-z]{2}$" }, example: US }
+        - { name: category, in: query, schema: { type: string }, example: music }
+        - { name: from, in: query, schema: { type: string, format: date } }
+        - { name: to, in: query, schema: { type: string, format: date } }
+        - { name: changed_since, in: query, schema: { type: string, format: date-time } }
+        - { name: commissioned, in: query, schema: { type: boolean }, description: "true = only events that pay a reward." }
+        - { name: minimum_earnings, in: query, schema: { type: number, minimum: 0 }, description: "Only events paying at least this much per ticket. Implies commissioned=true." }
+        - { name: near, in: query, schema: { type: string }, example: "Paris,FR" }
+        - { name: artist, in: query, schema: { type: string }, description: Performer name contains this text. }
+        - { name: lat, in: query, schema: { type: number } }
+        - { name: lng, in: query, schema: { type: number } }
+        - { name: radius, in: query, schema: { type: number, minimum: 1, maximum: 500, default: 50 }, description: Kilometres. }
+        - { name: limit, in: query, schema: { type: integer, minimum: 1, maximum: 100, default: 20 } }
+        - { name: cursor, in: query, schema: { type: string }, description: The `next` value from the previous page. }
+      responses:
+        "200":
+          description: One page of events.
+          headers:
+            TimTim-Request-Id: { $ref: "#/components/headers/RequestId" }
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [object, mode, events, next]
+                properties:
+                  object: { const: list }
+                  mode: { type: string, enum: [test, live] }
+                  events: { type: array, items: { $ref: "#/components/schemas/Event" } }
+                  next: { type: [string, "null"] }
+                  withdrawn:
+                    type: array
+                    description: >-
+                      Only when you send changed_since. Events you may have shown that are no longer
+                      shared with partners, withdrawn after that time — stop showing each id. Up to
+                      500; if you get 500, ask again with changed_since set to the last withdrawn_at.
+                      Never says why. Always empty for a test key.
+                    items: { $ref: "#/components/schemas/Withdrawn" }
+                  notices: { type: array, items: { type: string } }
+        "400": { $ref: "#/components/responses/Problem" }
+        "401": { $ref: "#/components/responses/Problem" }
+        "403": { $ref: "#/components/responses/Problem" }
+        "429": { $ref: "#/components/responses/Problem" }
+  /demo/events:
+    get:
+      operationId: listDemoEvents
+      summary: Sample events, no key
+      description: |
+        The same answer as `GET /events` for a test key — sample events only,
+        every name starting "TEST EVENT — NO REAL MONEY" — with no key and no
+        sign-up. Readable from any website (CORS `*`). This is what
+        https://timtim.live/developers/demo and the widget with no `data-key` call.
+
+        `simulate` (sandbox only) shows how your code should behave on a bad day:
+        `sold_out`, `cancelled`, `rescheduled` and `postponed` change every sample
+        event; `invalid_key` and `rate_limited` answer with the exact problem a real
+        key would get (401, and 429 with `Retry-After`).
+      security: []
+      parameters:
+        - { name: city, in: query, schema: { type: string }, example: Miami }
+        - { name: country, in: query, schema: { type: string, pattern: "^[A-Za-z]{2}$" }, example: US }
+        - { name: category, in: query, schema: { type: string }, example: music }
+        - { name: from, in: query, schema: { type: string, format: date } }
+        - { name: to, in: query, schema: { type: string, format: date } }
+        - { name: near, in: query, schema: { type: string }, example: "Paris,FR" }
+        - { name: artist, in: query, schema: { type: string } }
+        - { name: limit, in: query, schema: { type: integer, minimum: 1, maximum: 100, default: 20 } }
+        - { name: cursor, in: query, schema: { type: string } }
+        - { name: simulate, in: query, schema: { type: string, enum: [sold_out, cancelled, rescheduled, postponed, invalid_key, rate_limited] }, description: Sandbox only. See above. }
+      responses:
+        "200":
+          description: One page of sample events.
+          headers:
+            TimTim-Request-Id: { $ref: "#/components/headers/RequestId" }
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [object, mode, events, next]
+                properties:
+                  object: { const: list }
+                  mode: { const: test }
+                  events: { type: array, items: { $ref: "#/components/schemas/Event" } }
+                  next: { type: [string, "null"] }
+                  notices: { type: array, items: { type: string } }
+        "400": { $ref: "#/components/responses/Problem" }
+        "401": { $ref: "#/components/responses/Problem" }
+        "429": { $ref: "#/components/responses/Problem" }
+  /events/{id}:
+    get:
+      operationId: getEvent
+      summary: One event
+      description: Returned even after it ended or was cancelled, so you can take it down.
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: string }, example: evt_test_washington_konpa }
+      responses:
+        "200":
+          description: The event.
+          headers:
+            TimTim-Request-Id: { $ref: "#/components/headers/RequestId" }
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [object, mode, event]
+                properties:
+                  object: { const: event }
+                  mode: { type: string, enum: [test, live] }
+                  event: { $ref: "#/components/schemas/Event" }
+        "404": { $ref: "#/components/responses/Problem" }
+        "410":
+          description: The event was withdrawn — it is no longer shared with partners (problem event_withdrawn). Stop showing it.
+          content:
+            application/problem+json: { schema: { $ref: "#/components/schemas/Problem" } }
+  /earnings:
+    get:
+      operationId: listEarnings
+      summary: Your results
+      description: Sales that came through your buy links and what they earned. Never a buyer's name, email, address, phone or card. Needs a server key (tt_sk_live_) or a test key.
+      responses:
+        "200":
+          description: Your earnings.
+          headers:
+            TimTim-Request-Id: { $ref: "#/components/headers/RequestId" }
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [object, mode, currency, totals, earnings]
+                properties:
+                  object: { const: earnings }
+                  mode: { type: string, enum: [test, live] }
+                  currency: { type: string }
+                  totals:
+                    type: object
+                    properties:
+                      pending: { type: number }
+                      approved: { type: number }
+                      ready: { type: number }
+                      paid: { type: number }
+                      reversed: { type: number }
+                  earnings: { type: array, items: { $ref: "#/components/schemas/Earning" } }
+                  notices: { type: array, items: { type: string } }
+        "403": { $ref: "#/components/responses/Problem" }
+  /bulk/{file}:
+    get:
+      operationId: bulkFeed
+      summary: A custom bulk feed — every event a saved subscription covers, in one gzipped file
+      description: |
+        Save up to 5 subscriptions on /partners/dashboard (countries,
+        categories, days ahead, reward-paying only). `file` is
+        `<subscription id>.ndjson.gz` (one public Event per line — the same
+        object /events returns) or `<subscription id>.csv.gz` (the feed's CSV
+        columns). The file is made from the live events each time, through the
+        same rights rule and your agreement; a subscription can only narrow
+        what your agreement allows. Server keys only, as an Authorization
+        header. A LIVE key needs the BULK_FEEDS capability; a test key gets the
+        sample events. A full file at most every 15 minutes per subscription
+        (429 with Retry-After otherwise). `changed_since` makes a changes-only
+        file — not rate-limited beyond your key — and, in NDJSON, adds
+        `{"object":"withdrawn","id":…,"withdrawn_at":…}` lines for events to
+        take down. At most 250,000 events per file. A file that ends
+        early is not valid gzip — retry rather than load it.
+      parameters:
+        - { name: file, in: path, required: true, schema: { type: string, pattern: "^bfs_[A-Za-z0-9]{6,40}\\.(ndjson|csv)\\.gz$" } }
+        - { name: changed_since, in: query, schema: { type: string, format: date-time } }
+      responses:
+        "200":
+          description: The gzipped file. TimTim-Bulk-Kind says full or changes; TimTim-Bulk-Content-Type is the type inside the gzip.
+          content:
+            application/gzip: { schema: { type: string, format: binary } }
+        "403": { $ref: "#/components/responses/Problem" }
+        "404": { $ref: "#/components/responses/Problem" }
+        "429": { $ref: "#/components/responses/Problem" }
+  /events/{id}/tickets:
+    get:
+      operationId: listTicketTypes
+      summary: Ticket types you may sell in your own app (embedded commerce)
+      description: |
+        The paid ticket types on sale for one event, with the all-in price to
+        show (fees and tax included). Free tickets are not sold through orders —
+        use the event's buy_url. Server keys only. A LIVE key needs the
+        EMBEDDED_CHECKOUT capability (granted by TimTim.Live after review) and
+        TimTim.Live card payments switched on; a test key always gets a sample.
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: string } }
+      responses:
+        "200":
+          description: The ticket types.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [object, mode, event_id, ticket_types]
+                properties:
+                  object: { const: list }
+                  mode: { type: string, enum: [test, live] }
+                  event_id: { type: string }
+                  ticket_types: { type: array, items: { $ref: "#/components/schemas/TicketType" } }
+                  notices: { type: array, items: { type: string } }
+        "403": { $ref: "#/components/responses/Problem" }
+        "404": { $ref: "#/components/responses/Problem" }
+        "503": { $ref: "#/components/responses/Problem" }
+  /orders:
+    post:
+      operationId: createOrder
+      summary: Hold tickets for your buyer and get TimTim.Live's payment link
+      description: |
+        Embedded commerce (§145): your app collects the choice and the buyer;
+        TimTim.Live holds the tickets for about 30 minutes and returns
+        `checkout_url` — TimTim.Live's payment page on the organizer's own
+        account. Open it for the buyer (a new tab or an in-app browser). Card
+        details never pass through the API. The sale is credited to your company
+        directly — no click, no cookie, no postback — under the same rules and
+        limits as a buy_url. Send an `Idempotency-Key`: the same key returns the
+        same order, never a second hold. Server keys only; same access rules as
+        /events/{id}/tickets.
+      parameters:
+        - { name: Idempotency-Key, in: header, required: true, schema: { type: string, pattern: "^[A-Za-z0-9_-]{8,80}$" } }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [event_id, ticket_type_id, buyer_email, buyer_name]
+              additionalProperties: false
+              properties:
+                event_id: { type: string }
+                ticket_type_id: { type: string }
+                quantity: { type: integer, minimum: 1, maximum: 20, default: 1 }
+                buyer_email: { type: string, format: email, description: The buyer's own email — tickets are sent there. Never returned by the API. }
+                buyer_name: { type: string, maxLength: 160 }
+                sub_id: { type: string, pattern: "^[A-Za-z0-9._~-]{1,100}$", description: "Your own reference; it comes back on the order, the earning and postbacks." }
+      responses:
+        "200":
+          description: The order, with its payment link.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Order" }
+        "400": { $ref: "#/components/responses/Problem" }
+        "403": { $ref: "#/components/responses/Problem" }
+        "409": { $ref: "#/components/responses/Problem" }
+        "503": { $ref: "#/components/responses/Problem" }
+  /orders/{id}:
+    get:
+      operationId: getOrder
+      summary: The status of an order your company began
+      description: Status only — never the buyer's name or email. `checkout_url` is included only while the order is still awaiting payment.
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: string } }
+      responses:
+        "200":
+          description: The order.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Order" }
+        "404": { $ref: "#/components/responses/Problem" }
+  /settlements:
+    get:
+      operationId: listSettlements
+      summary: Your monthly statements (custom settlement)
+      description: |
+        For companies paid under agreed settlement terms. Once a calendar month
+        (UTC) has closed, the money Ready for you goes on one statement, paid
+        `net_days` after the month ends; under the agreed minimum it is carried
+        to the next month. READ ONLY — how and where you are paid is agreed with
+        TimTim.Live and can never be changed with a key. Needs a secret key or a
+        test key (test keys see none). Each statement's lines are the same
+        records /earnings gives.
+      responses:
+        "200":
+          description: Your terms (if agreed) and up to 36 statements, newest first.
+          headers:
+            TimTim-Request-Id: { $ref: "#/components/headers/RequestId" }
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [object, mode, terms, settlements]
+                properties:
+                  object: { const: list }
+                  mode: { type: string, enum: [test, live] }
+                  terms:
+                    type: [object, "null"]
+                    properties:
+                      method: { type: string, enum: [stripe_transfer, bank_transfer] }
+                      netDays: { type: integer }
+                      minimum: { type: number }
+                      reference: { type: [string, "null"] }
+                  settlements: { type: array, items: { $ref: "#/components/schemas/Settlement" } }
+                  notices: { type: array, items: { type: string } }
+        "403": { $ref: "#/components/responses/Problem" }
+  /offers:
+    get:
+      operationId: listOffers
+      summary: Card-linked offers (banks and rewards programmes)
+      description: |
+        Events that pay a reward right now, shaped as offers a bank or rewards
+        programme can show its customers: merchant, eligible dates, price,
+        destination and the commercial rules. Same filters and paging as
+        /events (commissioned=true is always applied).
+
+        Enterprise: a LIVE key needs the CARD_LINKED_OFFERS capability, granted
+        by TimTim.Live after review. A test key always gets sample offers.
+        Server keys only (tt_sk_live_ or a test key) — never a website key.
+
+        Activation is your tracked link (`activation.url`); rewards are paid to
+        your partner account and reported by /earnings. Matching card
+        transactions directly needs a card-network or bank agreement with
+        TimTim.Live, which is not in place, so `matching.card_transactions` is
+        false. Tickets are charged by each organizer's own payment account, so
+        `merchant.statement_descriptor` is null rather than guessed.
+      parameters:
+        - { name: city, in: query, schema: { type: string } }
+        - { name: country, in: query, schema: { type: string, pattern: "^[A-Za-z]{2}$" } }
+        - { name: category, in: query, schema: { type: string } }
+        - { name: from, in: query, schema: { type: string, format: date } }
+        - { name: to, in: query, schema: { type: string, format: date } }
+        - { name: changed_since, in: query, schema: { type: string, format: date-time } }
+        - { name: minimum_earnings, in: query, schema: { type: number, minimum: 0 } }
+        - { name: near, in: query, schema: { type: string } }
+        - { name: limit, in: query, schema: { type: integer, minimum: 1, maximum: 100, default: 20 } }
+        - { name: cursor, in: query, schema: { type: string } }
+      responses:
+        "200":
+          description: One page of offers.
+          headers:
+            TimTim-Request-Id: { $ref: "#/components/headers/RequestId" }
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [object, mode, offers, next]
+                properties:
+                  object: { const: list }
+                  mode: { type: string, enum: [test, live] }
+                  offers: { type: array, items: { $ref: "#/components/schemas/Offer" } }
+                  next: { type: [string, "null"] }
+                  notices: { type: array, items: { type: string } }
+        "403": { $ref: "#/components/responses/Problem" }
+  /oauth/token:
+    post:
+      operationId: oauthToken
+      summary: Get an access token (OAuth 2.0 client credentials)
+      description: |
+        Optional, for large integrations (RFC 6749 §4.4). Authenticate the OAuth
+        client once — HTTP Basic or client_id/client_secret in the form — and get
+        a one-hour bearer token to send instead of a key. Make OAuth clients on
+        /partners/dashboard. The client secret is never accepted as a key.
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              required: [grant_type]
+              properties:
+                grant_type: { const: client_credentials }
+                scope: { type: string, description: "Space-separated, e.g. \"events:read events:details\". Default: all the client has." }
+                client_id: { type: string }
+                client_secret: { type: string }
+      responses:
+        "200":
+          description: The token. Never cached.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [access_token, token_type, expires_in, scope]
+                properties:
+                  access_token: { type: string, example: tt_at_… }
+                  token_type: { const: Bearer }
+                  expires_in: { type: integer, example: 3600 }
+                  scope: { type: string }
+        "400": { $ref: "#/components/responses/OAuthError" }
+        "401": { $ref: "#/components/responses/OAuthError" }
+  /oauth/revoke:
+    post:
+      operationId: oauthRevoke
+      summary: End an access token early (RFC 7009)
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              required: [token]
+              properties:
+                token: { type: string }
+                client_id: { type: string }
+                client_secret: { type: string }
+      responses:
+        "200": { description: Done — whether or not the token existed. }
+        "401": { $ref: "#/components/responses/OAuthError" }
+  /feeds/{file}:
+    get:
+      operationId: eventFeed
+      summary: The same events as a feed
+      description: |
+        events.json (JSON Feed 1.1), events.rss (RSS 2.0), events.xml or events.csv —
+        the same events, filters and rights as GET /events. Feed readers cannot send
+        headers, so a website key (tt_pk_live_) or test key may be given as ?key=.
+        A server key is refused in a URL.
+      security: [{ bearer: [] }, { keyInQuery: [] }]
+      parameters:
+        - { name: file, in: path, required: true, schema: { type: string, enum: [events.json, events.rss, events.xml, events.csv, events.ics] } }
+        - { name: key, in: query, schema: { type: string } }
+        - { name: city, in: query, schema: { type: string } }
+        - { name: country, in: query, schema: { type: string } }
+        - { name: category, in: query, schema: { type: string } }
+        - { name: limit, in: query, schema: { type: integer, minimum: 1, maximum: 100, default: 20 } }
+      responses:
+        "200":
+          description: The feed.
+          content:
+            application/feed+json: {}
+            application/rss+xml: {}
+            application/xml: {}
+            text/csv: {}
+            text/calendar: {}
+        "401": { $ref: "#/components/responses/Problem" }
+webhooks:
+  event.changed:
+    post:
+      operationId: eventChangedWebhook
+      summary: An event you may show changed (created, changed, cancelled, rescheduled, sold out, reopened) — or was withdrawn.
+      description: >-
+        data carries EITHER `event` (show or update it) OR `withdrawn` (it is no longer shared with
+        partners: stop showing that id and remove its buy_url). Signed with your endpoint secret — see
+        TimTim-Signature. Answer 2xx within 10 seconds; otherwise we retry after 1 m, 5 m, 30 m, 2 h, 6 h,
+        12 h and 24 h.
+      parameters:
+        - { name: TimTim-Signature, in: header, required: true, schema: { type: string, example: "t=1700000000,v1=5257a869…" } }
+        - { name: TimTim-Timestamp, in: header, required: true, schema: { type: string } }
+        - { name: TimTim-Delivery-Id, in: header, required: true, schema: { type: string } }
+        - { name: TimTim-Event, in: header, required: true, schema: { type: string } }
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [id, type, created_at, mode, data]
+              properties:
+                id: { type: string }
+                type: { const: event.changed }
+                created_at: { type: string, format: date-time }
+                mode: { type: string, enum: [test, live] }
+                data:
+                  oneOf:
+                    - { type: object, required: [event], properties: { event: { $ref: "#/components/schemas/Event" } } }
+                    - { type: object, required: [withdrawn], properties: { withdrawn: { $ref: "#/components/schemas/Withdrawn" } } }
+      responses:
+        "200": { description: Received. }
+  earnings.changed:
+    post:
+      operationId: earningsChangedWebhook
+      summary: One of your earnings was created or changed state (pending, approved, ready, paid, reversed).
+      parameters:
+        - { name: TimTim-Signature, in: header, required: true, schema: { type: string } }
+        - { name: TimTim-Delivery-Id, in: header, required: true, schema: { type: string } }
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [id, type, created_at, mode, data]
+              properties:
+                id: { type: string }
+                type: { const: earnings.changed }
+                created_at: { type: string, format: date-time }
+                mode: { type: string, enum: [test, live] }
+                data: { type: object, properties: { earning: { $ref: "#/components/schemas/Earning" } } }
+      responses:
+        "200": { description: Received. }
+  conversion.postback:
+    get:
+      operationId: conversionPostback
+      summary: "Conversion postback (optional): we call YOUR URL template with the sale's values filled in."
+      description: |
+        Added on /partners/dashboard (Advanced). Rides earnings.changed, so a
+        sale, an approval, a payout and a refund each call it once — {status}
+        says which. Values: {sub_id} {sale_id} {event_id} {status} {commission}
+        {transaction_value} {currency} {created_at} {delivery_id}, each
+        URL-encoded. Values may only appear after the host. Unsigned: put your
+        tracker's own token in the template. Same retries as webhooks; any 2xx
+        is success. This is outbound only — TimTim.Live runs every checkout,
+        so partners never report sales to us (§25).
+      parameters:
+        - { name: TimTim-Delivery-Id, in: header, required: true, schema: { type: string } }
+      responses:
+        "200": { description: Received. }
+components:
+  securitySchemes:
+    mtls:
+      type: mutualTLS
+      description: |
+        Optional lock on a key (§71). Pin your TLS client certificate to the key
+        on /partners/dashboard and call https://api.timtim.live with it; a call
+        without that certificate is refused (certificate_required /
+        certificate_mismatch). Keys may also carry an IP allowlist
+        (ip_not_allowed).
+    oauth2:
+      type: oauth2
+      description: Optional, for large integrations. Make an OAuth client on /partners/dashboard.
+      flows:
+        clientCredentials:
+          tokenUrl: https://api.timtim.live/v1/oauth/token
+          scopes:
+            events:read: Find events
+            events:details: Read one event
+            earnings:read: Read your earnings (live server clients and test clients)
+    keyInQuery:
+      type: apiKey
+      in: query
+      name: key
+      description: Feeds only. A website key or a test key — never a server key.
+    bearer:
+      type: http
+      scheme: bearer
+      description: "tt_test_… (sandbox), tt_pk_live_… (website key: events only), tt_sk_live_… (server key: events and earnings)."
+  headers:
+    RequestId:
+      description: Send this to TimTim.Live support and we can find your request.
+      schema: { type: string, example: req_8F3kmQx2 }
+  responses:
+    OAuthError:
+      description: RFC 6749 §5.2 error — invalid_request, invalid_client, unauthorized_client, unsupported_grant_type or invalid_scope.
+      content:
+        application/json:
+          schema:
+            type: object
+            required: [error, error_description, request_id]
+            properties:
+              error: { type: string }
+              error_description: { type: string }
+              request_id: { type: string }
+    Problem:
+      description: Something to fix, explained in plain words (RFC 9457).
+      headers:
+        TimTim-Request-Id: { $ref: "#/components/headers/RequestId" }
+      content:
+        application/problem+json:
+          schema: { $ref: "#/components/schemas/Problem" }
+  schemas:
+    Withdrawn:
+      type: object
+      description: An event that is no longer shared with partners. Stop showing it. Never says why.
+      required: [id, withdrawn_at]
+      properties:
+        id: { type: string }
+        withdrawn_at: { type: string, format: date-time }
+    Event:
+      type: object
+      required: [id, name, status, starts_at, ends_at, date, timezone, location, image, category, performers, tickets, earn, can_share, url, display, organizer, test, updated_at, inventory_updated_at]
+      properties:
+        id: { type: string, example: evt_test_washington_konpa }
+        name: { type: string }
+        status: { type: string, enum: [scheduled, postponed, rescheduled, cancelled, sold_out, completed] }
+        starts_at: { type: [string, "null"], format: date-time, description: "Exact start, when the organizer gave one." }
+        ends_at: { type: [string, "null"], format: date-time }
+        date: { type: string, format: date, description: The day as the venue calls it. }
+        timezone: { type: [string, "null"] }
+        location:
+          type: object
+          properties:
+            venue: { type: [string, "null"] }
+            address: { type: [string, "null"] }
+            city: { type: [string, "null"] }
+            country: { type: [string, "null"] }
+            lat: { type: [number, "null"] }
+            lng: { type: [number, "null"] }
+        image: { type: [string, "null"], format: uri }
+        category: { type: [string, "null"] }
+        performers:
+          type: array
+          items: { type: object, properties: { name: { type: string } } }
+        tickets:
+          type: object
+          properties:
+            from: { type: [number, "null"] }
+            to: { type: [number, "null"] }
+            currency: { type: [string, "null"] }
+            availability: { type: string, enum: [available, limited, sold_out, not_on_sale, ended] }
+            buy_url: { type: string, format: uri, description: "Use this link exactly as given. It carries your attribution. Optional: add ?sub_id=YOUR_CLICK_ID (letters, digits, . _ ~ -, up to 100) and the sale carries it back as Earning.sub_id and in postbacks." }
+        earn:
+          type: object
+          required: [eligible]
+          properties:
+            eligible: { type: boolean }
+            amount: { type: number, description: A fixed reward per eligible ticket. }
+            percent: { type: number, description: A share of each eligible ticket. }
+            currency: { type: string }
+            description: { type: string, example: "$5 per eligible ticket" }
+        can_share: { type: boolean }
+        url: { type: string, format: uri, description: The event's public page. }
+        display:
+          type: object
+          description: Ready-made words for your card. For display only, never for accounting.
+          properties:
+            short_description: { type: [string, "null"] }
+            date_label: { type: string, example: "Sat, Oct 10 · 7:00 PM" }
+            price_label: { type: string, example: From $45 }
+        organizer:
+          type: object
+          properties:
+            name: { type: [string, "null"] }
+            verified: { type: boolean }
+        test: { type: boolean, description: True for sandbox events. }
+        updated_at: { type: string, format: date-time }
+        inventory_updated_at: { type: [string, "null"], format: date-time }
+    Earning:
+      type: object
+      required: [sale_id, event_id, transaction_value, commission, currency, status, reason, created_at, test, sub_id]
+      properties:
+        sale_id: { type: string }
+        event_id: { type: [string, "null"] }
+        transaction_value: { type: [number, "null"] }
+        commission: { type: number, description: Negative when a refund reversed it. }
+        currency: { type: string }
+        status: { type: string, enum: [pending, approved, ready, paid, reversed] }
+        reason: { type: [string, "null"] }
+        created_at: { type: string, format: date-time }
+        test: { type: boolean }
+        sub_id: { type: [string, "null"], description: "Your own click id, from ?sub_id= on the buy link that led to this sale. A refund carries the sale's sub_id." }
+    TicketType:
+      type: object
+      required: [id, name, price, total_per_ticket, currency, max_per_order, available, sales]
+      properties:
+        id: { type: string }
+        name: { type: string }
+        price: { type: number, description: The ticket's own price. }
+        total_per_ticket: { type: number, description: "What the buyer pays for one ticket, fees and tax included — show this number." }
+        currency: { type: string }
+        max_per_order: { type: integer }
+        available: { type: boolean }
+        sales: { type: string, enum: [open, not_yet, ended] }
+    Order:
+      type: object
+      required: [object, id, event_id, quantity, total, currency, status, sub_id, created_at, test]
+      properties:
+        object: { const: order }
+        id: { type: string }
+        event_id: { type: string }
+        quantity: { type: integer }
+        total: { type: [number, "null"], description: "What the buyer will pay, all included." }
+        currency: { type: [string, "null"] }
+        status: { type: string, enum: [awaiting_payment, paid, expired, cancelled, refunded, partially_refunded, test] }
+        sub_id: { type: [string, "null"] }
+        checkout_url: { type: string, format: uri, description: Only while awaiting payment. }
+        expires_at: { type: string, format: date-time }
+        created_at: { type: string, format: date-time }
+        test: { type: boolean }
+    Settlement:
+      type: object
+      required: [id, period_start, period_end, due_on, amount, currency, lines, status, method, reference, payment_reference, issued_at, paid_at]
+      properties:
+        id: { type: string, example: stl_po_abc_202610 }
+        period_start: { type: string, format: date }
+        period_end: { type: string, format: date, description: Exclusive — the first day of the next month. }
+        due_on: { type: string, format: date }
+        amount: { type: number, description: "Net of refunds. For a carried statement, the amount that moved to next month." }
+        currency: { type: string }
+        lines: { type: integer }
+        status: { type: string, enum: [carried, issued, paying, paid, failed, void] }
+        method: { type: string, enum: [stripe_transfer, bank_transfer] }
+        reference: { type: [string, "null"], description: The agreement's reference (contract or PO). }
+        payment_reference: { type: [string, "null"], description: "The Stripe transfer id or bank wire reference, once paid." }
+        issued_at: { type: string, format: date-time }
+        paid_at: { type: [string, "null"], format: date-time }
+    Offer:
+      type: object
+      required: [object, id, event_id, title, merchant, destination, eligible, price, reward, limits, rules, activation, matching, settlement, commercial_model, event_url, test, updated_at]
+      properties:
+        object: { const: offer }
+        id: { type: string, example: ofr_evt_test_washington_konpa }
+        event_id: { type: string }
+        title: { type: string }
+        merchant:
+          type: object
+          properties:
+            name: { type: [string, "null"], description: The organizer. }
+            merchant_of_record: { const: organizer }
+            statement_descriptor: { type: "null", description: Not held by TimTim.Live; each organizer's own payment account charges the card. }
+            verified: { type: boolean }
+        destination:
+          type: object
+          properties:
+            venue: { type: [string, "null"] }
+            address: { type: [string, "null"] }
+            city: { type: [string, "null"] }
+            country: { type: [string, "null"] }
+            lat: { type: [number, "null"] }
+            lng: { type: [number, "null"] }
+        eligible:
+          type: object
+          properties:
+            purchase_from: { type: string, format: date }
+            purchase_until: { type: string, format: date }
+            event_date: { type: string, format: date }
+            starts_at: { type: [string, "null"], format: date-time }
+        price:
+          type: object
+          properties:
+            from: { type: [number, "null"] }
+            to: { type: [number, "null"] }
+            currency: { type: [string, "null"] }
+        reward:
+          type: object
+          properties:
+            kind: { type: string, enum: [flat, percent] }
+            amount: { type: number }
+            percent: { type: number }
+            currency: { type: string }
+            description: { type: string }
+            funded_by: { const: organizer }
+            paid_to: { const: partner, description: Paid to your partner account; passing it to your customer is your own programme. }
+        limits:
+          type: object
+          properties:
+            budget_remaining: { type: [number, "null"], description: Null = the organizer set no limit. }
+            orders_remaining: { type: [integer, "null"], description: Fixed rewards with a limit only. }
+        rules: { type: array, items: { type: string } }
+        activation:
+          type: object
+          properties:
+            method: { const: link }
+            url: { type: string, format: uri, description: Your tracked buy link for this event. }
+        matching:
+          type: object
+          properties:
+            link_attribution: { const: true }
+            card_transactions: { const: false }
+            note: { type: string }
+        settlement:
+          type: object
+          properties:
+            report: { const: /v1/earnings }
+            webhook: { const: earnings.changed }
+            available: { type: string }
+        commercial_model: { const: CARD_LINKED }
+        event_url: { type: string, format: uri }
+        test: { type: boolean }
+        updated_at: { type: string, format: date-time }
+    Problem:
+      type: object
+      required: [type, title, status, detail, request_id, code]
+      properties:
+        type: { type: string, format: uri }
+        title: { type: string, example: We could not find that city. }
+        status: { type: integer }
+        detail: { type: string }
+        request_id: { type: string }
+        code: { type: string }

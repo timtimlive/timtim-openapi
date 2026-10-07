@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/timtimlive/timtim-openapi/main/schemas/Withdrawn.schema.json",
+  "title": "Withdrawn",
+  "$comment": "GENERATED from openapi.yaml by scripts/generate.mjs. Do not edit.",
+  "type": "object",
+  "description": "An event that is no longer shared with partners. Stop showing it. Never says why.",
+  "required": [
+    "id",
+    "withdrawn_at"
+  ],
+  "properties": {
+    "id": {
+      "type": "string"
+    },
+    "withdrawn_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  }
+}

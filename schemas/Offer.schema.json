@@ -1,0 +1,265 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/timtimlive/timtim-openapi/main/schemas/Offer.schema.json",
+  "title": "Offer",
+  "$comment": "GENERATED from openapi.yaml by scripts/generate.mjs. Do not edit.",
+  "type": "object",
+  "required": [
+    "object",
+    "id",
+    "event_id",
+    "title",
+    "merchant",
+    "destination",
+    "eligible",
+    "price",
+    "reward",
+    "limits",
+    "rules",
+    "activation",
+    "matching",
+    "settlement",
+    "commercial_model",
+    "event_url",
+    "test",
+    "updated_at"
+  ],
+  "properties": {
+    "object": {
+      "const": "offer"
+    },
+    "id": {
+      "type": "string",
+      "examples": [
+        "ofr_evt_test_washington_konpa"
+      ]
+    },
+    "event_id": {
+      "type": "string"
+    },
+    "title": {
+      "type": "string"
+    },
+    "merchant": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "The organizer."
+        },
+        "merchant_of_record": {
+          "const": "organizer"
+        },
+        "statement_descriptor": {
+          "type": "null",
+          "description": "Not held by TimTim.Live; each organizer's own payment account charges the card."
+        },
+        "verified": {
+          "type": "boolean"
+        }
+      }
+    },
+    "destination": {
+      "type": "object",
+      "properties": {
+        "venue": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "address": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "city": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "country": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "lat": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "lng": {
+          "type": [
+            "number",
+            "null"
+          ]
+        }
+      }
+    },
+    "eligible": {
+      "type": "object",
+      "properties": {
+        "purchase_from": {
+          "type": "string",
+          "format": "date"
+        },
+        "purchase_until": {
+          "type": "string",
+          "format": "date"
+        },
+        "event_date": {
+          "type": "string",
+          "format": "date"
+        },
+        "starts_at": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        }
+      }
+    },
+    "price": {
+      "type": "object",
+      "properties": {
+        "from": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "to": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "currency": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      }
+    },
+    "reward": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "flat",
+            "percent"
+          ]
+        },
+        "amount": {
+          "type": "number"
+        },
+        "percent": {
+          "type": "number"
+        },
+        "currency": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "funded_by": {
+          "const": "organizer"
+        },
+        "paid_to": {
+          "const": "partner",
+          "description": "Paid to your partner account; passing it to your customer is your own programme."
+        }
+      }
+    },
+    "limits": {
+      "type": "object",
+      "properties": {
+        "budget_remaining": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "description": "Null = the organizer set no limit."
+        },
+        "orders_remaining": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "description": "Fixed rewards with a limit only."
+        }
+      }
+    },
+    "rules": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "activation": {
+      "type": "object",
+      "properties": {
+        "method": {
+          "const": "link"
+        },
+        "url": {
+          "type": "string",
+          "format": "uri",
+          "description": "Your tracked buy link for this event."
+        }
+      }
+    },
+    "matching": {
+      "type": "object",
+      "properties": {
+        "link_attribution": {
+          "const": true
+        },
+        "card_transactions": {
+          "const": false
+        },
+        "note": {
+          "type": "string"
+        }
+      }
+    },
+    "settlement": {
+      "type": "object",
+      "properties": {
+        "report": {
+          "const": "/v1/earnings"
+        },
+        "webhook": {
+          "const": "earnings.changed"
+        },
+        "available": {
+          "type": "string"
+        }
+      }
+    },
+    "commercial_model": {
+      "const": "CARD_LINKED"
+    },
+    "event_url": {
+      "type": "string",
+      "format": "uri"
+    },
+    "test": {
+      "type": "boolean"
+    },
+    "updated_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  }
+}

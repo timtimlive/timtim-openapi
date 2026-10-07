@@ -1,0 +1,96 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/timtimlive/timtim-openapi/main/schemas/Settlement.schema.json",
+  "title": "Settlement",
+  "$comment": "GENERATED from openapi.yaml by scripts/generate.mjs. Do not edit.",
+  "type": "object",
+  "required": [
+    "id",
+    "period_start",
+    "period_end",
+    "due_on",
+    "amount",
+    "currency",
+    "lines",
+    "status",
+    "method",
+    "reference",
+    "payment_reference",
+    "issued_at",
+    "paid_at"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "examples": [
+        "stl_po_abc_202610"
+      ]
+    },
+    "period_start": {
+      "type": "string",
+      "format": "date"
+    },
+    "period_end": {
+      "type": "string",
+      "format": "date",
+      "description": "Exclusive — the first day of the next month."
+    },
+    "due_on": {
+      "type": "string",
+      "format": "date"
+    },
+    "amount": {
+      "type": "number",
+      "description": "Net of refunds. For a carried statement, the amount that moved to next month."
+    },
+    "currency": {
+      "type": "string"
+    },
+    "lines": {
+      "type": "integer"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "carried",
+        "issued",
+        "paying",
+        "paid",
+        "failed",
+        "void"
+      ]
+    },
+    "method": {
+      "type": "string",
+      "enum": [
+        "stripe_transfer",
+        "bank_transfer"
+      ]
+    },
+    "reference": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "The agreement's reference (contract or PO)."
+    },
+    "payment_reference": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "The Stripe transfer id or bank wire reference, once paid."
+    },
+    "issued_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "paid_at": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date-time"
+    }
+  }
+}

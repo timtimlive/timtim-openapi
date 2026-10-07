@@ -1,0 +1,278 @@
+{
+  "$comment": "Every file in examples/ is listed here. source=live-capture: a real response saved by scripts/capture-examples.mjs (no key needed). source=illustrative: written by hand to show a shape that needs a key or happens rarely; still validated against the contract by scripts/validate-examples.mjs.",
+  "examples": [
+    {
+      "file": "listDemoEvents/city-miami-category-music.200.json",
+      "kind": "response",
+      "operationId": "listDemoEvents",
+      "method": "GET",
+      "path": "/demo/events",
+      "query": {
+        "city": "Miami",
+        "category": "music"
+      },
+      "status": 200,
+      "responseHeaders": {
+        "content-type": "application/json",
+        "access-control-allow-origin": "*"
+      },
+      "source": "live-capture",
+      "captured": "2026-10-07",
+      "note": "The first call to try. Sample events only."
+    },
+    {
+      "file": "listDemoEvents/limit-2-first-page.200.json",
+      "kind": "response",
+      "operationId": "listDemoEvents",
+      "method": "GET",
+      "path": "/demo/events",
+      "query": {
+        "limit": "2"
+      },
+      "status": 200,
+      "responseHeaders": {
+        "content-type": "application/json",
+        "access-control-allow-origin": "*"
+      },
+      "source": "live-capture",
+      "captured": "2026-10-07",
+      "note": "A page with `next`: pass it as `cursor` to get the next page."
+    },
+    {
+      "file": "listDemoEvents/simulate-cancelled.200.json",
+      "kind": "response",
+      "operationId": "listDemoEvents",
+      "method": "GET",
+      "path": "/demo/events",
+      "query": {
+        "city": "Miami",
+        "simulate": "cancelled"
+      },
+      "status": 200,
+      "responseHeaders": {
+        "content-type": "application/json",
+        "access-control-allow-origin": "*"
+      },
+      "source": "live-capture",
+      "captured": "2026-10-07",
+      "note": "Sandbox only: every sample event as if cancelled."
+    },
+    {
+      "file": "listDemoEvents/simulate-sold_out.200.json",
+      "kind": "response",
+      "operationId": "listDemoEvents",
+      "method": "GET",
+      "path": "/demo/events",
+      "query": {
+        "city": "Miami",
+        "simulate": "sold_out"
+      },
+      "status": 200,
+      "responseHeaders": {
+        "content-type": "application/json",
+        "access-control-allow-origin": "*"
+      },
+      "source": "live-capture",
+      "captured": "2026-10-07",
+      "note": "Sandbox only: every sample event as if sold out."
+    },
+    {
+      "file": "listDemoEvents/simulate-invalid_key.401.json",
+      "kind": "response",
+      "operationId": "listDemoEvents",
+      "method": "GET",
+      "path": "/demo/events",
+      "query": {
+        "simulate": "invalid_key"
+      },
+      "status": 401,
+      "responseHeaders": {
+        "content-type": "application/problem+json",
+        "access-control-allow-origin": "*"
+      },
+      "source": "live-capture",
+      "captured": "2026-10-07",
+      "note": "The exact problem a bad key gets."
+    },
+    {
+      "file": "listDemoEvents/simulate-rate_limited.429.json",
+      "kind": "response",
+      "operationId": "listDemoEvents",
+      "method": "GET",
+      "path": "/demo/events",
+      "query": {
+        "simulate": "rate_limited"
+      },
+      "status": 429,
+      "responseHeaders": {
+        "content-type": "application/problem+json",
+        "retry-after": "30",
+        "access-control-allow-origin": "*"
+      },
+      "source": "live-capture",
+      "captured": "2026-10-07",
+      "note": "Comes with a Retry-After header (seconds)."
+    },
+    {
+      "file": "listDemoEvents/unknown-parameter.400.json",
+      "kind": "response",
+      "operationId": "listDemoEvents",
+      "method": "GET",
+      "path": "/demo/events",
+      "query": {
+        "colour": "blue"
+      },
+      "status": 400,
+      "responseHeaders": {
+        "content-type": "application/problem+json",
+        "access-control-allow-origin": "*"
+      },
+      "source": "live-capture",
+      "captured": "2026-10-07",
+      "note": "An unknown parameter is refused, never ignored."
+    },
+    {
+      "file": "listEvents/missing-key.401.json",
+      "kind": "response",
+      "operationId": "listEvents",
+      "method": "GET",
+      "path": "/events",
+      "query": {
+        "city": "Miami"
+      },
+      "status": 401,
+      "responseHeaders": {
+        "content-type": "application/problem+json"
+      },
+      "source": "live-capture",
+      "captured": "2026-10-07",
+      "note": "GET /events with no Authorization header."
+    },
+    {
+      "file": "listEvents/invalid-key.401.json",
+      "kind": "response",
+      "operationId": "listEvents",
+      "method": "GET",
+      "path": "/events",
+      "query": {
+        "city": "Miami"
+      },
+      "requestHeaders": {
+        "Authorization": "Bearer tt_test_not_a_real_key"
+      },
+      "status": 401,
+      "responseHeaders": {
+        "content-type": "application/problem+json"
+      },
+      "source": "live-capture",
+      "captured": "2026-10-07",
+      "note": "GET /events with a key that does not exist."
+    },
+    {
+      "file": "getEvent/evt_test_washington_konpa.200.illustrative.json",
+      "source": "illustrative",
+      "kind": "response",
+      "operationId": "getEvent",
+      "method": "GET",
+      "path": "/events/{id}",
+      "status": 200,
+      "note": "Needs a key. The same Event object as in lists."
+    },
+    {
+      "file": "listEvents/changed-since.200.illustrative.json",
+      "source": "illustrative",
+      "kind": "response",
+      "operationId": "listEvents",
+      "method": "GET",
+      "path": "/events",
+      "query": {
+        "changed_since": "2026-10-06T00:00:00Z"
+      },
+      "status": 200,
+      "note": "Live key: a cancelled event to update, and a withdrawn id to take down. Test keys always get an empty withdrawn."
+    },
+    {
+      "file": "listTicketTypes/evt_test_washington_konpa.200.illustrative.json",
+      "source": "illustrative",
+      "kind": "response",
+      "operationId": "listTicketTypes",
+      "method": "GET",
+      "path": "/events/{id}/tickets",
+      "status": 200,
+      "note": "Test key: one sample ticket type."
+    },
+    {
+      "file": "createOrder/request.illustrative.json",
+      "source": "illustrative",
+      "kind": "request",
+      "operationId": "createOrder",
+      "method": "POST",
+      "path": "/orders",
+      "requestHeaders": {
+        "Idempotency-Key": "order-2026-10-07-0001"
+      },
+      "note": "The body to POST with a test key. Use the buyer's real email in production."
+    },
+    {
+      "file": "createOrder/200.illustrative.json",
+      "source": "illustrative",
+      "kind": "response",
+      "operationId": "createOrder",
+      "method": "POST",
+      "path": "/orders",
+      "status": 200,
+      "note": "Open checkout_url for the buyer."
+    },
+    {
+      "file": "getOrder/200.illustrative.json",
+      "source": "illustrative",
+      "kind": "response",
+      "operationId": "getOrder",
+      "method": "GET",
+      "path": "/orders/{id}",
+      "status": 200,
+      "note": "Status only; never the buyer's name or email."
+    },
+    {
+      "file": "listEarnings/200.illustrative.json",
+      "source": "illustrative",
+      "kind": "response",
+      "operationId": "listEarnings",
+      "method": "GET",
+      "path": "/earnings",
+      "status": 200,
+      "note": "A sale, then its refund: status reversed with a negative commission and the same sub_id."
+    },
+    {
+      "file": "oauthToken/200.illustrative.json",
+      "source": "illustrative",
+      "kind": "response",
+      "operationId": "oauthToken",
+      "method": "POST",
+      "path": "/oauth/token",
+      "status": 200,
+      "note": "Not a real token."
+    },
+    {
+      "file": "webhooks/event.changed.illustrative.json",
+      "source": "illustrative",
+      "kind": "webhook",
+      "webhook": "event.changed",
+      "note": "data.event: show or update it (here: cancelled)."
+    },
+    {
+      "file": "webhooks/event.changed-withdrawn.illustrative.json",
+      "source": "illustrative",
+      "kind": "webhook",
+      "webhook": "event.changed",
+      "note": "data.withdrawn: stop showing that id and remove its buy_url."
+    },
+    {
+      "file": "webhooks/earnings.changed-reversed.illustrative.json",
+      "source": "illustrative",
+      "kind": "webhook",
+      "webhook": "earnings.changed",
+      "note": "status reversed = the sale was refunded."
+    }
+  ]
+}

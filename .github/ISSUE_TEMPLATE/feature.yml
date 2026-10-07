@@ -1,0 +1,24 @@
+name: Feature request
+description: An idea that would make these tools more useful.
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: What are you trying to do?
+      description: Tell us the goal, not just the solution. "I want to show only free events on my club's page" is great.
+    validations:
+      required: true
+  - type: textarea
+    id: idea
+    attributes:
+      label: What would help?
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: What have you tried?
+  - type: markdown
+    attributes:
+      value: |
+        If the idea needs the **API itself** to change (a new field, filter or endpoint), it belongs in
+        [timtim-openapi](https://github.com/timtimlive/timtim-openapi/issues) — the SDKs can only use what the contract has.

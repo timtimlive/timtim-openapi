@@ -1,0 +1,17 @@
+{
+  "object": "list",
+  "mode": "test",
+  "event_id": "evt_test_washington_konpa",
+  "ticket_types": [
+    {
+      "id": "tt_test_washington_konpa",
+      "name": "General admission (sample)",
+      "price": 45,
+      "total_per_ticket": 49.5,
+      "currency": "USD",
+      "max_per_order": 10,
+      "available": true,
+      "sales": "open"
+    }
+  ]
+}

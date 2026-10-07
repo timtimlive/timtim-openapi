@@ -1,0 +1,23 @@
+name: Documentation problem
+description: Something in a README or the docs is wrong, missing or confusing.
+labels: ["documentation"]
+body:
+  - type: input
+    id: where
+    attributes:
+      label: Where?
+      description: A link to the page or file.
+      placeholder: https://timtim.live/developers/quickstart or README.md
+    validations:
+      required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: What is wrong or confusing?
+      description: If a step did not work for you, say which step and what you saw.
+    validations:
+      required: true
+  - type: textarea
+    id: better
+    attributes:
+      label: What would make it clearer?

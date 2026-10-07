@@ -1,0 +1,73 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/timtimlive/timtim-openapi/main/schemas/Earning.schema.json",
+  "title": "Earning",
+  "$comment": "GENERATED from openapi.yaml by scripts/generate.mjs. Do not edit.",
+  "type": "object",
+  "required": [
+    "sale_id",
+    "event_id",
+    "transaction_value",
+    "commission",
+    "currency",
+    "status",
+    "reason",
+    "created_at",
+    "test",
+    "sub_id"
+  ],
+  "properties": {
+    "sale_id": {
+      "type": "string"
+    },
+    "event_id": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "transaction_value": {
+      "type": [
+        "number",
+        "null"
+      ]
+    },
+    "commission": {
+      "type": "number",
+      "description": "Negative when a refund reversed it."
+    },
+    "currency": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "approved",
+        "ready",
+        "paid",
+        "reversed"
+      ]
+    },
+    "reason": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "test": {
+      "type": "boolean"
+    },
+    "sub_id": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "Your own click id, from ?sub_id= on the buy link that led to this sale. A refund carries the sale's sub_id."
+    }
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "event_id": "evt_test_washington_konpa",
+  "ticket_type_id": "tt_test_washington_konpa",
+  "quantity": 2,
+  "buyer_email": "buyer@example.com",
+  "buyer_name": "Test Buyer",
+  "sub_id": "click-42"
+}

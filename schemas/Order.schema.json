@@ -1,0 +1,80 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/timtimlive/timtim-openapi/main/schemas/Order.schema.json",
+  "title": "Order",
+  "$comment": "GENERATED from openapi.yaml by scripts/generate.mjs. Do not edit.",
+  "type": "object",
+  "required": [
+    "object",
+    "id",
+    "event_id",
+    "quantity",
+    "total",
+    "currency",
+    "status",
+    "sub_id",
+    "created_at",
+    "test"
+  ],
+  "properties": {
+    "object": {
+      "const": "order"
+    },
+    "id": {
+      "type": "string"
+    },
+    "event_id": {
+      "type": "string"
+    },
+    "quantity": {
+      "type": "integer"
+    },
+    "total": {
+      "type": [
+        "number",
+        "null"
+      ],
+      "description": "What the buyer will pay, all included."
+    },
+    "currency": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "awaiting_payment",
+        "paid",
+        "expired",
+        "cancelled",
+        "refunded",
+        "partially_refunded",
+        "test"
+      ]
+    },
+    "sub_id": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "checkout_url": {
+      "type": "string",
+      "format": "uri",
+      "description": "Only while awaiting payment."
+    },
+    "expires_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "test": {
+      "type": "boolean"
+    }
+  }
+}

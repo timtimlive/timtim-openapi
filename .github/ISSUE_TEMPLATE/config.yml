@@ -1,0 +1,14 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Report a security vulnerability (privately)
+    url: https://github.com/timtimlive/timtim-openapi/security/advisories/new
+    about: Never open a public issue for a security problem. Use GitHub private vulnerability reporting ("Report a vulnerability" on the repository's Security tab). Policy - https://timtim.live/partners/security
+  - name: Questions and community
+    url: https://timtim.live/developers/community
+    about: Ask how to do something, or share what you built.
+  - name: Documentation
+    url: https://timtim.live/developers/docs
+    about: Guides, reference and the API contract.
+  - name: Business partnerships
+    url: https://timtim.live/partners
+    about: Rewards, embedded tickets, bulk feeds and partner agreements.
