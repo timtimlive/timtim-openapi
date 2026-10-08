@@ -34,6 +34,13 @@
     },
     "code": {
       "type": "string"
+    },
+    "allowed": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "405 only: the methods this address answers (also in the Allow header)."
     }
   }
 }

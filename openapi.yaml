@@ -12,6 +12,23 @@ info:
     give you. TimTim.Live handles tickets, checkout, refunds and attribution.
 
     Test keys (`tt_test_…`) see sample events only — no real money moves.
+
+    **Keys go in the `Authorization: Bearer` header.** Only `/feeds/{file}` also
+    reads a website or test key from `?key=` (feed readers cannot send headers);
+    anywhere else a key in the URL is refused with `key_in_url`.
+
+    **Rate limits.** Every keyed answer carries `RateLimit-Limit`,
+    `RateLimit-Remaining` and `RateLimit-Reset` (seconds until the window
+    resets); a 429 adds `Retry-After`. Browsers may read these headers.
+
+    **Browsers (CORS).** Answers for website keys and test keys may be read by
+    web pages (website keys only from their listed domains). Answers for server
+    keys (`tt_sk_live_…`) never carry `Access-Control-Allow-Origin`, so no web
+    page can read them — server keys are server-to-server.
+
+    **Errors** are `application/problem+json`, including 405, which also lists
+    the methods the address answers in `allowed` and the `Allow` header.
+
     Quick start: https://timtim.live/partners/docs
     Status: https://timtim.live/partners/status
   termsOfService: https://timtim.live/partners/terms
@@ -56,6 +73,9 @@ paths:
           description: One page of events.
           headers:
             TimTim-Request-Id: { $ref: "#/components/headers/RequestId" }
+            RateLimit-Limit: { $ref: "#/components/headers/RateLimitLimit" }
+            RateLimit-Remaining: { $ref: "#/components/headers/RateLimitRemaining" }
+            RateLimit-Reset: { $ref: "#/components/headers/RateLimitReset" }
           content:
             application/json:
               schema:
@@ -123,6 +143,36 @@ paths:
                   notices: { type: array, items: { type: string } }
         "400": { $ref: "#/components/responses/Problem" }
         "401": { $ref: "#/components/responses/Problem" }
+        "429": { $ref: "#/components/responses/Problem" }
+  /demo/events/{id}:
+    get:
+      operationId: getDemoEvent
+      summary: One sample event, no key
+      description: |
+        The same answer as `GET /events/{id}` for a test key, for one sample event,
+        with no key. Ids start with `evt_test_` (list them with `GET /demo/events`).
+        `simulate` works as on `/demo/events`. Unknown ids answer 404 `event_not_found`.
+      security: []
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: string }, example: evt_test_miami_konpa }
+        - { name: simulate, in: query, schema: { type: string, enum: [sold_out, cancelled, rescheduled, postponed, invalid_key, rate_limited] }, description: Sandbox only. }
+      responses:
+        "200":
+          description: The sample event.
+          headers:
+            TimTim-Request-Id: { $ref: "#/components/headers/RequestId" }
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [object, mode, event]
+                properties:
+                  object: { const: event }
+                  mode: { const: test }
+                  event: { $ref: "#/components/schemas/Event" }
+        "400": { $ref: "#/components/responses/Problem" }
+        "401": { $ref: "#/components/responses/Problem" }
+        "404": { $ref: "#/components/responses/Problem" }
         "429": { $ref: "#/components/responses/Problem" }
   /categories:
     get:
@@ -272,6 +322,9 @@ paths:
           description: The event.
           headers:
             TimTim-Request-Id: { $ref: "#/components/headers/RequestId" }
+            RateLimit-Limit: { $ref: "#/components/headers/RateLimitLimit" }
+            RateLimit-Remaining: { $ref: "#/components/headers/RateLimitRemaining" }
+            RateLimit-Reset: { $ref: "#/components/headers/RateLimitReset" }
           content:
             application/json:
               schema:
@@ -699,6 +752,15 @@ components:
     RequestId:
       description: Send this to TimTim.Live support and we can find your request.
       schema: { type: string, example: req_8F3kmQx2 }
+    RateLimitLimit:
+      description: Requests this key may make per one-minute window.
+      schema: { type: integer, example: 120 }
+    RateLimitRemaining:
+      description: Requests left in the current window.
+      schema: { type: integer, example: 119 }
+    RateLimitReset:
+      description: Seconds until the current window ends and the count starts again.
+      schema: { type: integer, example: 42 }
   responses:
     OAuthError:
       description: RFC 6749 §5.2 error — invalid_request, invalid_client, unauthorized_client, unsupported_grant_type or invalid_scope.
@@ -941,3 +1003,4 @@ components:
         detail: { type: string }
         request_id: { type: string }
         code: { type: string }
+        allowed: { type: array, items: { type: string }, description: "405 only: the methods this address answers (also in the Allow header)." }
