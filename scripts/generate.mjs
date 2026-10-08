@@ -249,6 +249,28 @@ async function postmanCollection() {
         ],
       },
       {
+        name: "What Can I Ask For?",
+        description: "Which categories and cities have events for your key right now, with counts — counted with the same rules as /events, so a category that says 3 gives 3.",
+        item: [
+          request("Categories", "GET", "/categories", { disabledQuery: ["country"], tests: ['pm.test("200 OK", () => pm.response.to.have.status(200));'] }),
+          request("Cities", "GET", "/locations", { query: { country: "US" }, disabledQuery: ["limit"], tests: ['pm.test("200 OK", () => pm.response.to.have.status(200));'] }),
+          request("Sample categories (no key)", "GET", "/demo/categories", { auth: NOAUTH }),
+          request("Sample cities (no key)", "GET", "/demo/locations", { auth: NOAUTH }),
+        ],
+      },
+      {
+        name: "Tracking",
+        description: "What the embed sends so your dashboard can count what visitors saw and clicked. Never money: sales are recorded by TimTim.Live itself. Answers 204.",
+        item: [
+          request("A visitor clicked Get tickets", "POST", "/track", {
+            auth: NOAUTH,
+            headers: [{ key: "Content-Type", value: "text/plain" }],
+            body: { mode: "raw", raw: JSON.stringify({ type: "event_click", event_id: "{{eventId}}", key: "{{apiKey}}", view: "pv_postman_example" }, null, 2) },
+            tests: ['pm.test("204 heard", () => pm.response.to.have.status(204));'],
+          }),
+        ],
+      },
+      {
         name: "Get Event",
         item: [request("One event", "GET", "/events/{id}", { pathVars: { id: "{{eventId}}" }, tests: ['pm.test("200 OK", () => pm.response.to.have.status(200));'], saved: [] })],
       },

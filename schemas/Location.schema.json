@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/timtimlive/timtim-openapi/main/schemas/Location.schema.json",
+  "title": "Location",
+  "$comment": "GENERATED from openapi.yaml by scripts/generate.mjs. Do not edit.",
+  "type": "object",
+  "required": [
+    "city",
+    "country",
+    "events"
+  ],
+  "properties": {
+    "city": {
+      "type": "string",
+      "examples": [
+        "Miami"
+      ]
+    },
+    "country": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "examples": [
+        "US"
+      ]
+    },
+    "events": {
+      "type": "integer",
+      "minimum": 1
+    }
+  }
+}

@@ -124,6 +124,142 @@ paths:
         "400": { $ref: "#/components/responses/Problem" }
         "401": { $ref: "#/components/responses/Problem" }
         "429": { $ref: "#/components/responses/Problem" }
+  /categories:
+    get:
+      operationId: listCategories
+      summary: Which categories have events
+      description: |
+        The categories you could pass to `GET /events` right now, each with how
+        many upcoming events it has. Counted with exactly the same rules as
+        `GET /events` for your key (what you are allowed to show, upcoming
+        only), so a category that says 3 gives 3. A test key counts sample events.
+      parameters:
+        - { name: country, in: query, schema: { type: string, pattern: "^[A-Za-z]{2}$" }, example: US }
+      responses:
+        "200":
+          description: Categories, most events first.
+          headers:
+            TimTim-Request-Id: { $ref: "#/components/headers/RequestId" }
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [object, mode, categories]
+                properties:
+                  object: { const: list }
+                  mode: { type: string, enum: [test, live] }
+                  categories: { type: array, items: { $ref: "#/components/schemas/Category" } }
+                  notices: { type: array, items: { type: string } }
+        "400": { $ref: "#/components/responses/Problem" }
+        "401": { $ref: "#/components/responses/Problem" }
+        "429": { $ref: "#/components/responses/Problem" }
+  /locations:
+    get:
+      operationId: listLocations
+      summary: Which cities have events
+      description: The cities you could pass to `GET /events` as `city` (with `country`), each with how many upcoming events it has. Same rules as `/categories`.
+      parameters:
+        - { name: country, in: query, schema: { type: string, pattern: "^[A-Za-z]{2}$" }, example: US }
+        - { name: limit, in: query, schema: { type: integer, minimum: 1, maximum: 500, default: 200 } }
+      responses:
+        "200":
+          description: Cities, most events first.
+          headers:
+            TimTim-Request-Id: { $ref: "#/components/headers/RequestId" }
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [object, mode, locations]
+                properties:
+                  object: { const: list }
+                  mode: { type: string, enum: [test, live] }
+                  locations: { type: array, items: { $ref: "#/components/schemas/Location" } }
+                  notices: { type: array, items: { type: string } }
+        "400": { $ref: "#/components/responses/Problem" }
+        "401": { $ref: "#/components/responses/Problem" }
+        "429": { $ref: "#/components/responses/Problem" }
+  /demo/categories:
+    get:
+      operationId: listDemoCategories
+      summary: Sample categories, no key
+      description: "`GET /categories` counted from sample events, with no key. Readable from any website (CORS `*`)."
+      security: []
+      parameters:
+        - { name: country, in: query, schema: { type: string, pattern: "^[A-Za-z]{2}$" } }
+      responses:
+        "200":
+          description: Sample categories.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [object, mode, categories]
+                properties:
+                  object: { const: list }
+                  mode: { const: test }
+                  categories: { type: array, items: { $ref: "#/components/schemas/Category" } }
+                  notices: { type: array, items: { type: string } }
+        "400": { $ref: "#/components/responses/Problem" }
+  /demo/locations:
+    get:
+      operationId: listDemoLocations
+      summary: Sample cities, no key
+      description: "`GET /locations` counted from sample events, with no key. Readable from any website (CORS `*`)."
+      security: []
+      parameters:
+        - { name: country, in: query, schema: { type: string, pattern: "^[A-Za-z]{2}$" } }
+        - { name: limit, in: query, schema: { type: integer, minimum: 1, maximum: 500, default: 200 } }
+      responses:
+        "200":
+          description: Sample cities.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [object, mode, locations]
+                properties:
+                  object: { const: list }
+                  mode: { const: test }
+                  locations: { type: array, items: { $ref: "#/components/schemas/Location" } }
+                  notices: { type: array, items: { type: string } }
+        "400": { $ref: "#/components/responses/Problem" }
+  /track:
+    post:
+      operationId: track
+      summary: Say what a visitor saw and clicked
+      description: |
+        Sent by the embed (and by your own page, if you build one) so you can see
+        how many people saw your events and clicked them. No key needed; send your
+        website key (`tt_pk_live_…`) or test key to count it under your account. A
+        website key only counts from its allowed domains — anywhere else the signal
+        is quietly ignored. Never send a server key.
+
+        **Not money.** These are browser signals. A sale, a refund or a reward is
+        recorded by TimTim.Live when it happens and is never accepted here: `purchase`,
+        `refund` and the like are refused. `204` means "heard", not "credited".
+
+        Repeats from the same page load count once. We never store your visitors'
+        IP address, browser, cookies or the page address. Works with
+        `navigator.sendBeacon` (a `text/plain` body is read as JSON).
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [type]
+              properties:
+                type: { type: string, enum: [impression, event_view, event_click] }
+                event_id: { type: string, description: "Required for event_view and event_click — the id exactly as /events gave it." }
+                key: { type: string, description: "Your website key or test key. Optional." }
+                shown: { type: integer, minimum: 0, maximum: 100, description: "impression only: how many events were shown." }
+                view: { type: string, pattern: "^[A-Za-z0-9_-]{8,64}$", description: "A random id you make once per page load, so a retry is not counted twice." }
+            example: { type: event_click, event_id: evt_test_washington_konpa, key: tt_test_example, view: pv_8F3kmQx2LpA0 }
+      responses:
+        "204": { description: Heard. }
+        "400": { $ref: "#/components/responses/Problem" }
   /events/{id}:
     get:
       operationId: getEvent
@@ -583,6 +719,19 @@ components:
         application/problem+json:
           schema: { $ref: "#/components/schemas/Problem" }
   schemas:
+    Category:
+      type: object
+      required: [id, events]
+      properties:
+        id: { type: string, example: music, description: "Pass it to /events as category." }
+        events: { type: integer, minimum: 1 }
+    Location:
+      type: object
+      required: [city, country, events]
+      properties:
+        city: { type: string, example: Miami }
+        country: { type: [string, "null"], example: US }
+        events: { type: integer, minimum: 1 }
     Withdrawn:
       type: object
       description: An event that is no longer shared with partners. Stop showing it. Never says why.

@@ -727,6 +727,203 @@
       ]
     },
     {
+      "name": "What Can I Ask For?",
+      "description": "Which categories and cities have events for your key right now, with counts — counted with the same rules as /events, so a category that says 3 gives 3.",
+      "item": [
+        {
+          "name": "Categories",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/categories",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "categories"
+              ],
+              "query": [
+                {
+                  "key": "country",
+                  "value": "US",
+                  "disabled": true
+                }
+              ]
+            },
+            "description": "The categories you could pass to `GET /events` right now, each with how\nmany upcoming events it has. Counted with exactly the same rules as\n`GET /events` for your key (what you are allowed to show, upcoming\nonly), so a category that says 3 gives 3. A test key counts sample events.\n"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"200 OK\", () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "Cities",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/locations?country=US",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "locations"
+              ],
+              "query": [
+                {
+                  "key": "country",
+                  "value": "US"
+                },
+                {
+                  "key": "limit",
+                  "value": "20",
+                  "disabled": true
+                }
+              ]
+            },
+            "description": "The cities you could pass to `GET /events` as `city` (with `country`), each with how many upcoming events it has. Same rules as `/categories`."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"200 OK\", () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "Sample categories (no key)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/demo/categories",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "demo",
+                "categories"
+              ]
+            },
+            "description": "`GET /categories` counted from sample events, with no key. Readable from any website (CORS `*`).",
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Sample cities (no key)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/demo/locations",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "demo",
+                "locations"
+              ]
+            },
+            "description": "`GET /locations` counted from sample events, with no key. Readable from any website (CORS `*`).",
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Tracking",
+      "description": "What the embed sends so your dashboard can count what visitors saw and clicked. Never money: sales are recorded by TimTim.Live itself. Answers 204.",
+      "item": [
+        {
+          "name": "A visitor clicked Get tickets",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "text/plain"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/track",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "track"
+              ]
+            },
+            "description": "Sent by the embed (and by your own page, if you build one) so you can see\nhow many people saw your events and clicked them. No key needed; send your\nwebsite key (`tt_pk_live_…`) or test key to count it under your account. A\nwebsite key only counts from its allowed domains — anywhere else the signal\nis quietly ignored. Never send a server key.\n\n**Not money.** These are browser signals. A sale, a refund or a reward is\nrecorded by TimTim.Live when it happens and is never accepted here: `purchase`,\n`refund` and the like are refused. `204` means \"heard\", not \"credited\".\n\nRepeats from the same page load count once. We never store your visitors'\nIP address, browser, cookies or the page address. Works with\n`navigator.sendBeacon` (a `text/plain` body is read as JSON).\n",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"type\": \"event_click\",\n  \"event_id\": \"{{eventId}}\",\n  \"key\": \"{{apiKey}}\",\n  \"view\": \"pv_postman_example\"\n}"
+            },
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"204 heard\", () => pm.response.to.have.status(204));"
+                ]
+              }
+            }
+          ],
+          "response": []
+        }
+      ]
+    },
+    {
       "name": "Get Event",
       "item": [
         {

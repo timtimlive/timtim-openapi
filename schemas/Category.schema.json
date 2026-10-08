@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/timtimlive/timtim-openapi/main/schemas/Category.schema.json",
+  "title": "Category",
+  "$comment": "GENERATED from openapi.yaml by scripts/generate.mjs. Do not edit.",
+  "type": "object",
+  "required": [
+    "id",
+    "events"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "examples": [
+        "music"
+      ],
+      "description": "Pass it to /events as category."
+    },
+    "events": {
+      "type": "integer",
+      "minimum": 1
+    }
+  }
+}
