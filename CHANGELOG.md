@@ -4,6 +4,11 @@ This file tracks the repository. The API contract's own version is `info.version
 
 ## [Unreleased] — Developer Preview
 
+### Changed
+
+- The Postman collection is built by `scripts/generate.mjs` straight from `openapi.yaml`. `openapi-to-postmanv2` is gone, and with it the `@faker-js/faker` and old `yaml` it pulled in (GHSA-qxc2-j82w-r537, GHSA-48c2-rrv3-qjmp). The collection is the same; the "revoke a token" request now carries its summary.
+- The contract adds ETag and 304 on the event reads, and says website keys are counted per visitor.
+
 ### Added
 
 - `GET /categories`, `GET /locations` and their keyless twins `GET /demo/categories`, `GET /demo/locations` — what you can ask `/events` for, with counts. `POST /track` — the embed's impression, view and click signals (never money). Schemas `Category` and `Location`; Postman folders "What Can I Ask For?" and "Tracking".

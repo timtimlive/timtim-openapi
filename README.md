@@ -13,7 +13,7 @@ The **API contract** for TimTim.Live — the one file that says exactly what the
 | [`openapi.yaml`](openapi.yaml) | The contract, OpenAPI 3.1 | Copied byte for byte from TimTim.Live's source of truth (also served at https://timtim.live/partner-api/openapi.yaml) |
 | [`schemas/`](schemas) | One JSON Schema (2020-12) per object: `Event`, `Earning`, `Order`, `TicketType`, `Offer`, `Settlement`, `Problem`, `Withdrawn` | **Generated** from `openapi.yaml` |
 | [`examples/`](examples) | Real requests and responses, listed in [`examples/manifest.json`](examples/manifest.json) | `live-capture`: saved from the live API (calls that need no key). `illustrative`: hand-written for calls that need a key — the file name says `.illustrative.` |
-| [`postman/timtim-api.postman_collection.json`](postman/timtim-api.postman_collection.json) | A Postman collection | **Generated** with openapi-to-postmanv2, then arranged into folders |
+| [`postman/timtim-api.postman_collection.json`](postman/timtim-api.postman_collection.json) | A Postman collection | **Generated** from the contract by `scripts/generate.mjs`, in folders |
 
 Every example is validated against the contract on every change.
 

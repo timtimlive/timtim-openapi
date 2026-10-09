@@ -6,12 +6,12 @@
  *   node scripts/generate.mjs --check   exit 1 if any generated file is stale, missing or extra
  *
  * schemas/<Name>.schema.json — one JSON Schema (2020-12) per component schema.
- * postman/timtim-api.postman_collection.json — converted with openapi-to-postmanv2,
- *   then arranged into folders a newcomer can follow, keyless demo request first.
+ * postman/timtim-api.postman_collection.json — built here from openapi.yaml, in
+ *   folders a newcomer can follow, keyless demo request first.
  */
 import { existsSync, mkdirSync, readFileSync, readdirSync, unlinkSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
-import Converter from "openapi-to-postmanv2";
+
 import { SCHEMA_BASE, json, loadContract, normalise, root } from "./lib.mjs";
 
 const check = process.argv.includes("--check");
@@ -51,26 +51,23 @@ function toJsonSchemaLocal(schema) {
 
 /* ── postman/ ──────────────────────────────────────────────────────────────── */
 
-function convert() {
-  return new Promise((resolve, reject) => {
-    Converter.convert(
-      { type: "json", data: contract },
-      { folderStrategy: "Paths", parametersResolution: "Schema", includeWebhooks: false, requestNameSource: "Fallback" },
-      (err, result) => {
-        if (err) return reject(err);
-        if (!result.result) return reject(new Error(result.reason));
-        resolve(result.output[0].data);
-      },
-    );
-  });
-}
-
-function flatten(items, out = []) {
-  for (const item of items) {
-    if (item.item) flatten(item.item, out);
-    else out.push(item);
-  }
-  return out;
+/*
+ * What each request takes from the contract: its path (Postman writes {id} as
+ * :id), its query parameters with their descriptions, and its description.
+ * Read straight from openapi.yaml — no converter package (2026-10-09: the one
+ * we used pulled in a faker version with an unfixed advisory).
+ */
+function operation(method, path) {
+  const item = contract.paths[path];
+  const op = item?.[method.toLowerCase()];
+  if (!op) throw new Error(`openapi.yaml has no ${method} ${path}`);
+  const resolve = (p) => (p.$ref ? p.$ref.split("/").reduce((node, key) => (key === "#" ? contract : node[key]), null) : p);
+  const params = [...(item.parameters ?? []), ...(op.parameters ?? [])].map(resolve);
+  return {
+    path: path.split("/").filter(Boolean).map((p) => (p.startsWith("{") ? `:${p.slice(1, -1)}` : p)),
+    query: params.filter((p) => p.in === "query").map((p) => ({ key: p.name, ...(p.description ? { description: p.description } : {}) })),
+    description: op.description ?? op.summary ?? "",
+  };
 }
 
 function stripIds(node) {
@@ -85,18 +82,10 @@ const example = (file) => JSON.parse(readFileSync(join(root, "examples", file), 
 const NOAUTH = { type: "noauth" };
 
 async function postmanCollection() {
-  const converted = flatten((await convert()).item);
-  /* Find the converter's request for one operation, by method and path. */
-  const find = (method, path) => {
-    const want = path.split("/").filter(Boolean).map((p) => (p.startsWith("{") ? `:${p.slice(1, -1)}` : p)).join("/");
-    const hit = converted.find((i) => i.request.method === method && i.request.url.path.join("/") === want);
-    if (!hit) throw new Error(`openapi-to-postmanv2 produced no request for ${method} ${path}`);
-    return hit;
-  };
-
-  /** One request: the converter's URL and description, with our own values. */
+  /** One request: the contract's path, parameters and description, with our own values. */
   function request(name, method, path, { query = {}, disabledQuery = [], pathVars = {}, headers = [], body, auth, tests, prerequest, saved, description } = {}) {
-    const base = find(method, path);
+    const op = operation(method, path);
+    const base = { request: { url: { path: op.path, query: op.query }, description: op.description } };
     const known = new Map((base.request.url.query ?? []).map((q) => [q.key, q]));
     const q = [
       ...Object.entries(query).map(([key, value]) => ({ key, value: String(value), ...(known.get(key)?.description ? { description: known.get(key).description } : {}) })),
@@ -191,7 +180,7 @@ async function postmanCollection() {
     info: {
       name: "TimTim.Live Partner API (Developer Preview)",
       description:
-        "Generated from openapi.yaml (https://timtim.live/partner-api/openapi.yaml) with openapi-to-postmanv2, then arranged by scripts/generate.mjs.\n\n" +
+        "Generated from openapi.yaml (https://timtim.live/partner-api/openapi.yaml) by scripts/generate.mjs.\n\n" +
         "1. Send **Start here** — it needs no key.\n2. Put your test key (tt_test_…, from https://timtim.live/partners/dashboard) in the collection variable `apiKey`.\n3. Work down the folders.\n\n" +
         "Test keys see sample events only. No real money moves. Docs: https://timtim.live/developers/docs",
       schema: "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",

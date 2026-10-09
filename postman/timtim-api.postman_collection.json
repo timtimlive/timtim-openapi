@@ -1,7 +1,7 @@
 {
   "info": {
     "name": "TimTim.Live Partner API (Developer Preview)",
-    "description": "Generated from openapi.yaml (https://timtim.live/partner-api/openapi.yaml) with openapi-to-postmanv2, then arranged by scripts/generate.mjs.\n\n1. Send **Start here** — it needs no key.\n2. Put your test key (tt_test_…, from https://timtim.live/partners/dashboard) in the collection variable `apiKey`.\n3. Work down the folders.\n\nTest keys see sample events only. No real money moves. Docs: https://timtim.live/developers/docs",
+    "description": "Generated from openapi.yaml (https://timtim.live/partner-api/openapi.yaml) by scripts/generate.mjs.\n\n1. Send **Start here** — it needs no key.\n2. Put your test key (tt_test_…, from https://timtim.live/partners/dashboard) in the collection variable `apiKey`.\n3. Work down the folders.\n\nTest keys see sample events only. No real money moves. Docs: https://timtim.live/developers/docs",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "auth": {
@@ -384,7 +384,7 @@
                 "revoke"
               ]
             },
-            "description": "",
+            "description": "End an access token early (RFC 7009)",
             "body": {
               "mode": "urlencoded",
               "urlencoded": [
