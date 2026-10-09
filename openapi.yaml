@@ -17,16 +17,25 @@ info:
     reads a website or test key from `?key=` (feed readers cannot send headers);
     anywhere else a key in the URL is refused with `key_in_url`.
 
-    **Rate limits.** Every keyed answer carries `RateLimit-Limit`,
+    **Rate limits.** A key may ask only so many questions a minute. Every keyed answer carries `RateLimit-Limit`,
     `RateLimit-Remaining` and `RateLimit-Reset` (seconds until the window
     resets); a 429 adds `Retry-After`. Browsers may read these headers.
+    A website key (`tt_pk_live_`) is counted per visitor, under a larger
+    ceiling for the whole site, and the same question gets the same answer
+    for 30 seconds.
 
-    **Browsers (CORS).** Answers for website keys and test keys may be read by
+    **Browsers (CORS).** This says which web pages may read an answer.
+    Answers for website keys and test keys may be read by
     web pages (website keys only from their listed domains). Answers for server
     keys (`tt_sk_live_…`) never carry `Access-Control-Allow-Origin`, so no web
     page can read them — server keys are server-to-server.
 
-    **Errors** are `application/problem+json`, including 405, which also lists
+    **Nothing changed?** Every JSON answer to a key has an `ETag`. Send it
+    back as `If-None-Match` and, if the answer is the same, you get `304`
+    with no body — faster for you and for us.
+
+    **Errors.** When something goes wrong, the answer says what happened and
+    what to do next. Errors are `application/problem+json`, including 405, which also lists
     the methods the address answers in `allowed` and the `Allow` header.
 
     Quick start: https://timtim.live/partners/docs
@@ -73,6 +82,7 @@ paths:
           description: One page of events.
           headers:
             TimTim-Request-Id: { $ref: "#/components/headers/RequestId" }
+            ETag: { $ref: "#/components/headers/ETag" }
             RateLimit-Limit: { $ref: "#/components/headers/RateLimitLimit" }
             RateLimit-Remaining: { $ref: "#/components/headers/RateLimitRemaining" }
             RateLimit-Reset: { $ref: "#/components/headers/RateLimitReset" }
@@ -95,6 +105,7 @@ paths:
                       Never says why. Always empty for a test key.
                     items: { $ref: "#/components/schemas/Withdrawn" }
                   notices: { type: array, items: { type: string } }
+        "304": { $ref: "#/components/responses/NotModified" }
         "400": { $ref: "#/components/responses/Problem" }
         "401": { $ref: "#/components/responses/Problem" }
         "403": { $ref: "#/components/responses/Problem" }
@@ -322,6 +333,7 @@ paths:
           description: The event.
           headers:
             TimTim-Request-Id: { $ref: "#/components/headers/RequestId" }
+            ETag: { $ref: "#/components/headers/ETag" }
             RateLimit-Limit: { $ref: "#/components/headers/RateLimitLimit" }
             RateLimit-Remaining: { $ref: "#/components/headers/RateLimitRemaining" }
             RateLimit-Reset: { $ref: "#/components/headers/RateLimitReset" }
@@ -334,6 +346,7 @@ paths:
                   object: { const: event }
                   mode: { type: string, enum: [test, live] }
                   event: { $ref: "#/components/schemas/Event" }
+        "304": { $ref: "#/components/responses/NotModified" }
         "404": { $ref: "#/components/responses/Problem" }
         "410":
           description: The event was withdrawn — it is no longer shared with partners (problem event_withdrawn). Stop showing it.
@@ -749,11 +762,16 @@ components:
       scheme: bearer
       description: "tt_test_… (sandbox), tt_pk_live_… (website key: events only), tt_sk_live_… (server key: events and earnings)."
   headers:
+    ETag:
+      description: >-
+        A short fingerprint of this answer. Send it back as If-None-Match; if the
+        answer has not changed you get 304 with no body.
+      schema: { type: string, example: 'W/"q3J8x0dVb7RkT1mZcY2pAa"' }
     RequestId:
       description: Send this to TimTim.Live support and we can find your request.
       schema: { type: string, example: req_8F3kmQx2 }
     RateLimitLimit:
-      description: Requests this key may make per one-minute window.
+      description: Requests allowed in this one-minute window — for a website key, per visitor.
       schema: { type: integer, example: 120 }
     RateLimitRemaining:
       description: Requests left in the current window.
@@ -762,6 +780,11 @@ components:
       description: Seconds until the current window ends and the count starts again.
       schema: { type: integer, example: 42 }
   responses:
+    NotModified:
+      description: Nothing changed since the ETag you sent in If-None-Match. No body; keep what you have.
+      headers:
+        ETag: { $ref: "#/components/headers/ETag" }
+        TimTim-Request-Id: { $ref: "#/components/headers/RequestId" }
     OAuthError:
       description: RFC 6749 §5.2 error — invalid_request, invalid_client, unauthorized_client, unsupported_grant_type or invalid_scope.
       content:

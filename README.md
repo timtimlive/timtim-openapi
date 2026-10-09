@@ -80,7 +80,7 @@ SDKs, widgets, adapters, examples and public API specifications.
 
 ### What is not included
 
-The hosted TimTim.Live Event API implementation, production databases, ticketing backend, checkout systems, attribution systems, payouts, fraud systems, customer data, infrastructure and proprietary business logic are not part of this repository.
+This code shows events. It does not include TimTim.Live's own servers. Tickets, payments, payouts, fraud checks and everyone's private data stay with TimTim.Live. You reach them through the API.
 
 These tools connect to the hosted TimTim.Live API at:
 
