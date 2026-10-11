@@ -48,7 +48,7 @@ All at `https://api.timtim.live`. Every error is plain words in the same shape (
 1. In Postman: **Import** → choose `postman/timtim-api.postman_collection.json`.
 2. Send **Start here: sample events (no key)**. It works with no key.
 3. Get a free test key (`tt_test_…`) at https://timtim.live/partners/dashboard and paste it into the collection variable `apiKey`.
-4. Go down the folders: Authentication → Search Events → What Can I Ask For? → Tracking → Get Event → Changed Events → Sandbox Transaction → Webhooks → Errors → Earnings, Offers, Statements and Feeds.
+4. Work down the folders, top to bottom. They start with Authentication and Search Events, and end with Errors and Earnings.
 
 The **Webhooks** folder sends correctly signed deliveries to *your* endpoint (`webhookUrl`, `webhookSecret`), so you can test your signature check.
 
