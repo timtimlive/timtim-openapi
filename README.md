@@ -11,7 +11,7 @@ The **API contract** for TimTim.Live — the one file that says exactly what the
 | Path | What it is | Made how |
 |---|---|---|
 | [`openapi.yaml`](openapi.yaml) | The contract, OpenAPI 3.1 | Copied byte for byte from TimTim.Live's source of truth (also served at https://timtim.live/partner-api/openapi.yaml) |
-| [`schemas/`](schemas) | One JSON Schema (2020-12) per object: `Event`, `Earning`, `Order`, `TicketType`, `Offer`, `Settlement`, `Problem`, `Withdrawn` | **Generated** from `openapi.yaml` |
+| [`schemas/`](schemas) | One JSON Schema (2020-12) per object: `Event`, `Category`, `Location`, `Earning`, `Order`, `TicketType`, `Offer`, `Settlement`, `Problem`, `Withdrawn` | **Generated** from `openapi.yaml` |
 | [`examples/`](examples) | Real requests and responses, listed in [`examples/manifest.json`](examples/manifest.json) | `live-capture`: saved from the live API (calls that need no key). `illustrative`: hand-written for calls that need a key — the file name says `.illustrative.` |
 | [`postman/timtim-api.postman_collection.json`](postman/timtim-api.postman_collection.json) | A Postman collection | **Generated** from the contract by `scripts/generate.mjs`, in folders |
 
@@ -27,12 +27,28 @@ curl "https://api.timtim.live/v1/demo/events?city=Miami&category=music"
 
 You get sample events. Every name starts with "TEST EVENT — NO REAL MONEY".
 
+## What you can ask for
+
+| Ask | Address | Key? |
+|---|---|---|
+| Events (by city, country, type, dates, artist, near a point) | `GET /v1/events` | Yes — or `GET /v1/demo/events` with no key (sample events) |
+| One event, even if cancelled or ended | `GET /v1/events/{id}` | Yes |
+| Which event types have events | `GET /v1/categories` | Yes — or `GET /v1/demo/categories` |
+| Which cities have events | `GET /v1/locations` | Yes — or `GET /v1/demo/locations` |
+| Count what visitors saw and clicked (never money) | `POST /v1/track` | No |
+| Feeds for calendars, RSS, spreadsheets | `GET /v1/feeds/{file}` | A website or test key in the address |
+| Your results, orders, statements, offers | `/v1/earnings`, `/v1/orders`, `/v1/settlements`, `/v1/offers` | A server key or test key |
+
+All at `https://api.timtim.live`. Every error is plain words in the same shape (`application/problem+json`).
+
+**AI assistants** use the same events through an MCP server, not this REST contract: `https://api.timtim.live/v1/mcp` — steps at https://timtim.live/developers/ai.
+
 ## Postman
 
 1. In Postman: **Import** → choose `postman/timtim-api.postman_collection.json`.
 2. Send **Start here: sample events (no key)**. It works with no key.
 3. Get a free test key (`tt_test_…`) at https://timtim.live/partners/dashboard and paste it into the collection variable `apiKey`.
-4. Go down the folders: Authentication → Search Events → Get Event → Changed Events → Sandbox Transaction → Webhooks → Errors.
+4. Go down the folders: Authentication → Search Events → What Can I Ask For? → Tracking → Get Event → Changed Events → Sandbox Transaction → Webhooks → Errors → Earnings, Offers, Statements and Feeds.
 
 The **Webhooks** folder sends correctly signed deliveries to *your* endpoint (`webhookUrl`, `webhookSecret`), so you can test your signature check.
 
