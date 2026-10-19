@@ -33,7 +33,8 @@
       "type": "string"
     },
     "code": {
-      "type": "string"
+      "type": "string",
+      "description": "A stable name for what went wrong, e.g. invalid_cursor, idempotency_conflict."
     },
     "allowed": {
       "type": "array",

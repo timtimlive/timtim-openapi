@@ -60,7 +60,7 @@ paths:
     get:
       operationId: listEvents
       summary: Find events
-      description: Upcoming events you may show, oldest first. With `changed_since`, every event that changed after that time, including ones that ended or were cancelled.
+      description: Upcoming events you may show, oldest first. "Upcoming" is decided on each event's own local date and time zone, so an event tonight in the Americas is still listed after midnight UTC. With `changed_since`, every event that changed after that time, including ones that ended or were cancelled. Times are compared to the millisecond.
       parameters:
         - { name: city, in: query, schema: { type: string }, example: Washington }
         - { name: country, in: query, schema: { type: string, pattern: "^[A-Za-z]{2}$" }, example: US }
@@ -101,8 +101,9 @@ paths:
                     description: >-
                       Only when you send changed_since. Events you may have shown that are no longer
                       shared with partners, withdrawn after that time — stop showing each id. Up to
-                      500; if you get 500, ask again with changed_since set to the last withdrawn_at.
-                      Never says why. Always empty for a test key.
+                      5,000. If there are more, `notices` says so: ask again with changed_since set to
+                      one millisecond before the last withdrawn_at (an id you already removed may come
+                      again). Never says why. Always empty for a test key.
                     items: { $ref: "#/components/schemas/Withdrawn" }
                   notices: { type: array, items: { type: string } }
         "304": { $ref: "#/components/responses/NotModified" }
@@ -133,6 +134,9 @@ paths:
         - { name: to, in: query, schema: { type: string, format: date } }
         - { name: near, in: query, schema: { type: string }, example: "Paris,FR" }
         - { name: artist, in: query, schema: { type: string } }
+        - { name: lat, in: query, schema: { type: number } }
+        - { name: lng, in: query, schema: { type: number } }
+        - { name: radius, in: query, schema: { type: number, minimum: 1, maximum: 500, default: 50 }, description: Kilometres. }
         - { name: limit, in: query, schema: { type: integer, minimum: 1, maximum: 100, default: 20 } }
         - { name: cursor, in: query, schema: { type: string } }
         - { name: simulate, in: query, schema: { type: string, enum: [sold_out, cancelled, rescheduled, postponed, invalid_key, rate_limited] }, description: Sandbox only. See above. }
@@ -356,7 +360,7 @@ paths:
     get:
       operationId: listEarnings
       summary: Your results
-      description: Sales that came through your buy links and what they earned. Never a buyer's name, email, address, phone or card. Needs a server key (tt_sk_live_) or a test key.
+      description: Sales that came through your buy links and what they earned. Never a buyer's name, email, address, phone or card. Needs a server key (tt_sk_live_) or a test key. `totals` counts every sale you have; `earnings` lists the newest 500, and `notices` says so when there are more (use the earnings.changed webhook to keep a full copy).
       responses:
         "200":
           description: Your earnings.
@@ -452,9 +456,12 @@ paths:
         account. Open it for the buyer (a new tab or an in-app browser). Card
         details never pass through the API. The sale is credited to your company
         directly — no click, no cookie, no postback — under the same rules and
-        limits as a buy_url. Send an `Idempotency-Key`: the same key returns the
-        same order, never a second hold. Server keys only; same access rules as
-        /events/{id}/tickets.
+        limits as a buy_url. Send an `Idempotency-Key`: the same key with the same
+        body returns the same order (its `checkout_url` only while it can still be
+        paid), never a second hold. The same key with a DIFFERENT body is refused
+        with 409 `idempotency_conflict`. Keys are yours alone: another company
+        using the same key never meets your order. Server keys only; same access
+        rules as /events/{id}/tickets.
       parameters:
         - { name: Idempotency-Key, in: header, required: true, schema: { type: string, pattern: "^[A-Za-z0-9_-]{8,80}$" } }
       requestBody:
@@ -479,8 +486,20 @@ paths:
             application/json:
               schema: { $ref: "#/components/schemas/Order" }
         "400": { $ref: "#/components/responses/Problem" }
+        "401": { $ref: "#/components/responses/Problem" }
         "403": { $ref: "#/components/responses/Problem" }
-        "409": { $ref: "#/components/responses/Problem" }
+        "404":
+          description: The event is not one you may sell (problem event_not_found).
+          content:
+            application/problem+json: { schema: { $ref: "#/components/schemas/Problem" } }
+        "409":
+          description: |
+            ticket_not_available — that ticket cannot be bought right now; or
+            idempotency_conflict — this Idempotency-Key was already used for a different order
+            (or the first request with it is still being made: send it again in a few seconds).
+          content:
+            application/problem+json: { schema: { $ref: "#/components/schemas/Problem" } }
+        "429": { $ref: "#/components/responses/Problem" }
         "503": { $ref: "#/components/responses/Problem" }
   /orders/{id}:
     get:
@@ -1025,5 +1044,5 @@ components:
         status: { type: integer }
         detail: { type: string }
         request_id: { type: string }
-        code: { type: string }
+        code: { type: string, description: "A stable name for what went wrong, e.g. invalid_cursor, idempotency_conflict." }
         allowed: { type: array, items: { type: string }, description: "405 only: the methods this address answers (also in the Allow header)." }

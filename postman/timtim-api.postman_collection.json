@@ -278,7 +278,7 @@
                 }
               ]
             },
-            "description": "Upcoming events you may show, oldest first. With `changed_since`, every event that changed after that time, including ones that ended or were cancelled."
+            "description": "Upcoming events you may show, oldest first. \"Upcoming\" is decided on each event's own local date and time zone, so an event tonight in the Americas is still listed after midnight UTC. With `changed_since`, every event that changed after that time, including ones that ended or were cancelled. Times are compared to the millisecond."
           },
           "event": [
             {
@@ -512,7 +512,7 @@
                 }
               ]
             },
-            "description": "Upcoming events you may show, oldest first. With `changed_since`, every event that changed after that time, including ones that ended or were cancelled."
+            "description": "Upcoming events you may show, oldest first. \"Upcoming\" is decided on each event's own local date and time zone, so an event tonight in the Americas is still listed after midnight UTC. With `changed_since`, every event that changed after that time, including ones that ended or were cancelled. Times are compared to the millisecond."
           },
           "event": [
             {
@@ -624,7 +624,7 @@
                 }
               ]
             },
-            "description": "Upcoming events you may show, oldest first. With `changed_since`, every event that changed after that time, including ones that ended or were cancelled."
+            "description": "Upcoming events you may show, oldest first. \"Upcoming\" is decided on each event's own local date and time zone, so an event tonight in the Americas is still listed after midnight UTC. With `changed_since`, every event that changed after that time, including ones that ended or were cancelled. Times are compared to the millisecond."
           },
           "event": [
             {
@@ -1063,7 +1063,7 @@
                 }
               ]
             },
-            "description": "Upcoming events you may show, oldest first. With `changed_since`, every event that changed after that time, including ones that ended or were cancelled."
+            "description": "Upcoming events you may show, oldest first. \"Upcoming\" is decided on each event's own local date and time zone, so an event tonight in the Americas is still listed after midnight UTC. With `changed_since`, every event that changed after that time, including ones that ended or were cancelled. Times are compared to the millisecond."
           },
           "event": [
             {
@@ -1146,7 +1146,7 @@
                 "orders"
               ]
             },
-            "description": "Embedded commerce (§145): your app collects the choice and the buyer;\nTimTim.Live holds the tickets for about 30 minutes and returns\n`checkout_url` — TimTim.Live's payment page on the organizer's own\naccount. Open it for the buyer (a new tab or an in-app browser). Card\ndetails never pass through the API. The sale is credited to your company\ndirectly — no click, no cookie, no postback — under the same rules and\nlimits as a buy_url. Send an `Idempotency-Key`: the same key returns the\nsame order, never a second hold. Server keys only; same access rules as\n/events/{id}/tickets.\n",
+            "description": "Embedded commerce (§145): your app collects the choice and the buyer;\nTimTim.Live holds the tickets for about 30 minutes and returns\n`checkout_url` — TimTim.Live's payment page on the organizer's own\naccount. Open it for the buyer (a new tab or an in-app browser). Card\ndetails never pass through the API. The sale is credited to your company\ndirectly — no click, no cookie, no postback — under the same rules and\nlimits as a buy_url. Send an `Idempotency-Key`: the same key with the same\nbody returns the same order (its `checkout_url` only while it can still be\npaid), never a second hold. The same key with a DIFFERENT body is refused\nwith 409 `idempotency_conflict`. Keys are yours alone: another company\nusing the same key never meets your order. Server keys only; same access\nrules as /events/{id}/tickets.\n",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"event_id\": \"{{eventId}}\",\n  \"ticket_type_id\": \"{{ticketTypeId}}\",\n  \"quantity\": 2,\n  \"buyer_email\": \"buyer@example.com\",\n  \"buyer_name\": \"Test Buyer\",\n  \"sub_id\": \"click-42\"\n}",
@@ -1751,7 +1751,7 @@
                 "earnings"
               ]
             },
-            "description": "Sales that came through your buy links and what they earned. Never a buyer's name, email, address, phone or card. Needs a server key (tt_sk_live_) or a test key."
+            "description": "Sales that came through your buy links and what they earned. Never a buyer's name, email, address, phone or card. Needs a server key (tt_sk_live_) or a test key. `totals` counts every sale you have; `earnings` lists the newest 500, and `notices` says so when there are more (use the earnings.changed webhook to keep a full copy)."
           },
           "response": []
         },
